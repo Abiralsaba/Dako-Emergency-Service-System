@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # MySQL Database (Equivalent to XAMPP's MySQL)
+  mysql:
+    image: mysql:8.0
+    container_name: serds_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: emergency_dispatch
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # phpMyAdmin for easy database viewing
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: serds_phpmyadmin
+    links:
+      - mysql:mysql
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+
+volumes:
+  db_data:

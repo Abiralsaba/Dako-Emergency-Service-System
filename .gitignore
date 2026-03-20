@@ -1,0 +1,16 @@
+# Logs
+*.log
+logs
+npm-debug.log*
+
+# System Files
+.DS_Store
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
