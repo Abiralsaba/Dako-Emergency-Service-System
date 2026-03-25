@@ -14,3 +14,20 @@ npm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Node
+node_modules/
+dist/
+build/
+
+# Java / Gradle
+backend/bin/
+backend/build/
+backend/.gradle/
+*.class
+*.jar
+*.war
+
+# Environment
+.env
+frontend/.env
