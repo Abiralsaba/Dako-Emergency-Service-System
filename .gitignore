@@ -31,3 +31,4 @@ backend/.gradle/
 # Environment
 .env
 frontend/.env
+backend/.env

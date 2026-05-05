@@ -1,7 +1,7 @@
-1) Advanced Object oriented Programming 
-2)SpringBoot
-3)design and develop everything as a human  professional Web developer and software engineer
-4)UBER like live emergency dispatch system 
-5)Ask me if you dont understand anything 
-6)Dont make any mistakes , do everthings in details and perfectly 
-7) UI shouldbe animated and 3d and very beautiful and professional
+1) Work as a professional human Web and software designer 
+2) Aoop concept 
+3)An Uber-like emergency dispatch system for ambulance, fire service, and police, built with modern Java and Spring Boot. Designed for scalability, modularity, and professional software engineering practices.
+4)Springboot and and you are connected with xampp databse 
+5)It should be champion like project, best ui and 3d design  with best backend design 
+6)Human like short comment for code 
+7

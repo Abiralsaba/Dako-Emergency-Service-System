@@ -1,85 +1,326 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ═══════════════════════════════════════════════
+   DAKO — Cinematic Dark Design System
+   ═══════════════════════════════════════════════ */
 
 :root {
-  --background: #09090b;
-  --foreground: #ffffff;
-  --accent: #e11d48; /* Crimson / Emergency Red */
-  --accent-glow: rgba(225, 29, 72, 0.4);
-  --police-blue: #2563eb;
-  --ambulance-green: #16a34a;
-  --surface: rgba(255, 255, 255, 0.03);
-  --surface-border: rgba(255, 255, 255, 0.1);
+  /* Deep space backgrounds */
+  --bg-deep: #030712;
+  --bg-surface: #0a0f1e;
+  --bg-elevated: #111827;
+
+  /* Accent palette */
+  --accent: #00f0ff;
+  --accent-glow: rgba(0, 240, 255, 0.3);
+  --accent-emerald: #10b981;
+  --accent-emerald-glow: rgba(16, 185, 129, 0.4);
+  --accent-gold: #f59e0b;
+
+  /* Service colors */
+  --police-blue: #3b82f6;
+  --ambulance-green: #10b981;
+  --fire-red: #ef4444;
+
+  /* Text */
+  --text-primary: #e2e8f0;
+  --text-secondary: #64748b;
+  --text-muted: #475569;
+
+  /* Surfaces */
+  --surface: rgba(10, 15, 30, 0.85);
+  --surface-border: rgba(0, 240, 255, 0.1);
+  --surface-border-subtle: rgba(255, 255, 255, 0.06);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 0;
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Glassmorphism Classes */
+/* Smooth transitions globally */
+*, *::before, *::after {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ═══════════════════════════════════
+   Typography
+   ═══════════════════════════════════ */
+
+.font-display {
+  font-family: 'Orbitron', monospace;
+}
+
+/* ═══════════════════════════════════
+   Glassmorphism — Dark Cinematic
+   ═══════════════════════════════════ */
+
 .glass-panel {
-  background: var(--surface);
+  background: rgba(10, 15, 30, 0.8);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 240, 255, 0.12);
+  box-shadow:
+    0 0 30px rgba(0, 240, 255, 0.05),
+    0 20px 60px -10px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-panel-subtle {
+  background: rgba(10, 15, 30, 0.6);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--surface-border);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
 }
+
+/* ═══════════════════════════════════
+   HUD-style border glow animation
+   ═══════════════════════════════════ */
+
+.hud-border {
+  position: relative;
+}
+
+.hud-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 240, 255, 0.4),
+    rgba(16, 185, 129, 0.2),
+    rgba(0, 240, 255, 0.1),
+    rgba(16, 185, 129, 0.4)
+  );
+  background-size: 300% 300%;
+  animation: hudShift 6s ease-in-out infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+@keyframes hudShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ═══════════════════════════════════
+   Input Fields — Dark Theme
+   ═══════════════════════════════════ */
 
 .input-field {
   width: 100%;
-  padding: 12px 16px;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--surface-border);
-  color: white;
-  border-radius: 8px;
+  padding: 13px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-radius: 10px;
   outline: none;
   transition: all 0.3s ease;
   font-size: 15px;
+  font-family: 'Inter', sans-serif;
   margin-bottom: 16px;
 }
 
 .input-field:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 10px var(--accent-glow);
+  box-shadow: 0 0 0 3px var(--accent-glow), 0 0 20px rgba(0, 240, 255, 0.1);
+  background: rgba(0, 240, 255, 0.03);
 }
+
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════
+   Primary Button — Cyan Glow
+   ═══════════════════════════════════ */
 
 .btn-primary {
   width: 100%;
   padding: 14px;
-  background: var(--accent);
-  color: white;
+  background: linear-gradient(135deg, #00f0ff, #10b981);
+  color: #030712;
   border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  font-family: 'Orbitron', monospace;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.btn-primary:hover::before {
+  transform: translateX(100%);
 }
 
 .btn-primary:hover {
-  background: #f43f5e;
-  box-shadow: 0 0 20px var(--accent-glow);
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.4), 0 0 60px rgba(16, 185, 129, 0.2);
   transform: translateY(-2px);
 }
 
-/* Custom Scrollbar for dark theme */
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ═══════════════════════════════════
+   SOS Pulse Animation
+   ═══════════════════════════════════ */
+
+@keyframes sosPulse {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+  50% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* ═══════════════════════════════════
+   Utility Animations
+   ═══════════════════════════════════ */
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* ═══════════════════════════════════
+   Scrollbar — Dark Theme
+   ═══════════════════════════════════ */
+
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: var(--bg-deep);
 }
+
 ::-webkit-scrollbar-thumb {
-  background: var(--surface-border);
-  border-radius: 4px;
+  background: rgba(0, 240, 255, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.4);
+}
+
+/* ═══════════════════════════════════
+   Selection Color
+   ═══════════════════════════════════ */
+
+::selection {
+  background: var(--accent);
+  color: var(--bg-deep);
+}
+
+/* ═══════════════════════════════════
+   Dashboard overrides (keep light panels
+   working inside dashboard)
+   ═══════════════════════════════════ */
+
+.dashboard-container .glass-panel {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06);
+}
+
+/* ═══════════════════════════════════
+   Auth Dark Override
+   Forces dark-theme colors inside the
+   cinematic landing AuthSection wrapper.
+   ═══════════════════════════════════ */
+
+.auth-dark-override h2 {
+  color: #e2e8f0 !important;
+}
+
+.auth-dark-override p {
+  color: #64748b !important;
+}
+
+.auth-dark-override label {
+  color: #94a3b8 !important;
+}
+
+.auth-dark-override span {
+  color: #64748b !important;
+}
+
+/* Role cards in register form */
+.auth-dark-override div[style*="background: rgb(255, 255, 255)"],
+.auth-dark-override div[style*="background:#ffffff"],
+.auth-dark-override div[style*="background: #ffffff"] {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Back button in register step 2 */
+.auth-dark-override button[style*="background: rgb(255, 255, 255)"],
+.auth-dark-override button[style*="background:#ffffff"],
+.auth-dark-override button[style*="background: #ffffff"] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #e2e8f0 !important;
+}
+
+/* Override any remaining dark text colors */
+.auth-dark-override span[style*="color: var(--accent)"] {
+  color: var(--accent) !important;
 }

@@ -1,45 +1,51 @@
-# 🚨 DispatchOS - Next-Gen Emergency Dispatch System
 
-A highly professional, 3D-animated, Uber-like live emergency dispatch intelligence platform. Built with Advanced Object-Oriented principles to instantly coordinate Citizens with First Responders (Police, Fire, Ambulance).
+# Emergency Dispatch System
 
----
+An Uber-like emergency dispatch system for ambulance, fire service, and police, built with modern Java and Spring Boot. Designed for scalability, modularity, and professional software engineering practices.
 
-## 🛠️ The Tech Stack
+## Technology Stack
+- **Java:** 25
+- **Spring Boot:** 4.0.5
+- **Gradle:** 9.4.1
 
-- **Backend:** Java Spring Boot 3.4.3 (Compiled dynamically to Java 21)
-- **Database:** MySQL (Powered natively by standard XAMPP)
-- **ORM Tooling:** Hibernate / Spring Data JPA
-- **Frontend Engine:** React 18 & Vite
-- **UI & Animations:** `@react-three/fiber` (3D rendering), `framer-motion` (Glassmorphism UI)
+## Project Structure
+- **backend/**: Spring Boot application (REST API, business logic, security, data access)
+- **frontend/**: React application (user interface)
 
----
+### Backend Highlights
+- Modular service domains: ambulance, fire, police
+- Core dispatch and assignment logic
+- User authentication and management
+- Shared utilities and configuration
 
-## 🚀 How to Run the System
+## Getting Started
 
-The easiest way to launch both your Backend Engine and your React 3D UI simultaneously is to use the automated launcher script.
+### Prerequisites
+- Java 25
+- Gradle 9.4.1 (wrapper included)
+- Node.js (for frontend)
 
-1. Ensure **XAMPP / MySQL** is running in the background.
-2. Open a terminal in the root `Emergency/` directory.
-3. Run the following command:
-```bash
-./start.sh
-```
+### Backend Setup
+1. Navigate to the `backend/` directory.
+2. Build and run the application:
+	```sh
+	./gradlew bootRun
+	```
+3. Configure `src/main/resources/application.yml` for your database and environment settings.
 
-### ⚠️ IMPORTANT SERVER WARNING (MUST READ)
+### Frontend Setup
+1. Navigate to the `frontend/` directory.
+2. Install dependencies:
+	```sh
+	npm install
+	```
+3. Start the development server:
+	```sh
+	npm run dev
+	```
 
-When the backend starts up, it will eventually pause and show something like:
-`> :bootRun`
-`> 80% EXECUTING`
+## Directory Layout
+See the repository structure for details on backend and frontend organization.
 
-**THIS IS NORMAL! YOUR APP IS NOT STUCK.** 
-Because this is a live web-server API, its job is to stay "awake" forever, constantly listening on `port 8080` for emergency data. The progress bar will stay at 80% until you manually decide to shut down the server by pressing **`Ctrl + C`**.
-
-*(As soon as you see "Tomcat started on port 8080", your database tables are completely built and the engine is listening!)*
-
----
-
-## 👤 System Roles
-
-1. **Citizens:** Standard users. They require NID validation, a Home Address, and an Emergency Contact Number explicitly mapped to their profile.
-2. **Responders:** First responders consisting of `POLICE`, `FIRE_SERVICE`, and `AMBULANCE` teams. Their accounts map their assigned `Vehicle Registration Number` directly to the grid.
-3. **Admins:** General overseers tracking system analytics.
+## License
+[Specify license here]
