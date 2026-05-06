@@ -19,8 +19,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.transaction.annotation.Transactional;
+
 // Heart of the system — handles emergency lifecycle from SOS to resolution
 @Service
+@Transactional
 public class EmergencyService {
 
     private final EmergencyRepository emergencyRepo;

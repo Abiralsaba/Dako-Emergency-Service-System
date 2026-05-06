@@ -97,6 +97,13 @@ export default function ResponderDashboard() {
       if (!directionsServiceRef.current) {
         directionsServiceRef.current = new window.google.maps.DirectionsService();
       }
+      // If practically the same location, skip routing
+      if (Math.abs(origin.lat - destination.lat) < 0.0001 && Math.abs(origin.lng - destination.lng) < 0.0001) {
+        setDirections(null);
+        setRouteInfo({ duration: 'Arrived', distance: '0 km' });
+        return;
+      }
+
       directionsServiceRef.current.route(
         { origin, destination, travelMode: window.google.maps.TravelMode.DRIVING },
         (result, status) => {
@@ -106,6 +113,9 @@ export default function ResponderDashboard() {
             if (leg) {
               setRouteInfo({ duration: leg.duration.text, distance: leg.distance.text });
             }
+          } else {
+            setDirections(null);
+            setRouteInfo(null);
           }
         }
       );
@@ -202,15 +212,11 @@ export default function ResponderDashboard() {
   const myPos = latitude && longitude ? { lat: latitude, lng: longitude } : null;
 
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 56px)' }}>
+    <div className="dashboard-layout">
       {/* Left sidebar */}
       <motion.div
         initial={{ x: -30, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
-        style={{
-          width: '380px', padding: '24px', overflowY: 'auto',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
-          background: 'rgba(9,9,11,0.95)',
-        }}
+        className="dashboard-sidebar"
       >
         {/* Online/Offline toggle */}
         {approvalStatus === 'APPROVED' && !activeJob && (
@@ -437,7 +443,7 @@ export default function ResponderDashboard() {
       </motion.div>
 
       {/* Right — Map */}
-      <div style={{ flex: 1 }}>
+      <div className="dashboard-map">
         <EmergencyMap center={myPos || citizenPos} directions={directions} routeInfo={routeInfo}>
           {myPos && (
             <ServiceMarker position={myPos} type="DEFAULT" label="Your Position" details="You are here" />

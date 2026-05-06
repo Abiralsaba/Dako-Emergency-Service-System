@@ -11,12 +11,12 @@ import SOSButton from '../ui/SOSButton';
 import ServiceTypeSelector from '../ui/ServiceTypeCard';
 import StatusStepper from '../ui/StatusStepper';
 import EmergencyCard from '../ui/EmergencyCard';
-import { Phone, User, Car, MapPin, X, Clock } from 'lucide-react';
+import { Phone, User, Car, MapPin, X, Clock, AlertTriangle, RefreshCw, Loader } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function CitizenDashboard() {
   const { user } = useAuth();
-  const { latitude, longitude } = useGeolocation();
+  const { latitude, longitude, error: geoError, loading: geoLoading, permissionState, retry: retryGeo, hasRealLocation } = useGeolocation();
   const { subscribe } = useWebSocket();
 
   const [emergencyType, setEmergencyType] = useState('');
@@ -75,6 +75,12 @@ export default function CitizenDashboard() {
       if (!directionsServiceRef.current) {
         directionsServiceRef.current = new window.google.maps.DirectionsService();
       }
+      if (Math.abs(respLoc.lat - citizenLoc.lat) < 0.0001 && Math.abs(respLoc.lng - citizenLoc.lng) < 0.0001) {
+        setDirections(null);
+        setRouteInfo({ duration: 'Arrived', distance: '0 km' });
+        return;
+      }
+
       directionsServiceRef.current.route(
         {
           origin: respLoc,
@@ -91,6 +97,9 @@ export default function CitizenDashboard() {
                 distance: leg.distance.text,
               });
             }
+          } else {
+            setDirections(null);
+            setRouteInfo(null);
           }
         }
       );
@@ -156,15 +165,11 @@ export default function CitizenDashboard() {
   const mapCenter = responderPos || (latitude && longitude ? { lat: latitude, lng: longitude } : null);
 
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 56px)' }}>
+    <div className="dashboard-layout">
       {/* Left sidebar — controls */}
       <motion.div
         initial={{ x: -30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.4 }}
-        style={{
-          width: '380px', padding: '24px', overflowY: 'auto',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
-          background: 'rgba(9,9,11,0.95)',
-        }}
+        className="dashboard-sidebar"
       >
         <AnimatePresence mode="wait">
           {activeEmergency ? (
@@ -272,7 +277,35 @@ export default function CitizenDashboard() {
                 style={{ resize: 'none', height: '80px', marginBottom: '16px' }}
               />
 
-              {latitude && longitude && (
+              {/* GPS Status */}
+              {geoLoading && !hasRealLocation && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '16px', fontSize: '12px', color: '#f59e0b', fontWeight: 600 }}>
+                  <Loader size={14} className="spin" /> Acquiring GPS signal...
+                </div>
+              )}
+              {geoError && !hasRealLocation && (
+                <div style={{ marginBottom: '16px', padding: '12px', borderRadius: '10px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#ef4444', fontWeight: 600, marginBottom: '6px' }}>
+                    <AlertTriangle size={14} /> {geoError}
+                  </div>
+                  {permissionState === 'denied' && (
+                    <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '8px' }}>
+                      Open your browser/device settings and allow location access for this site.
+                    </div>
+                  )}
+                  <button
+                    onClick={retryGeo}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px',
+                      color: '#00f0ff', background: 'rgba(0,240,255,0.08)', border: '1px solid rgba(0,240,255,0.2)',
+                      borderRadius: '6px', padding: '4px 10px', cursor: 'pointer', fontWeight: 600,
+                    }}
+                  >
+                    <RefreshCw size={12} /> Retry GPS
+                  </button>
+                </div>
+              )}
+              {hasRealLocation && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '16px', fontSize: '12px', color: '#10b981', fontWeight: 600 }}>
                   <MapPin size={14} /> GPS locked: {latitude.toFixed(4)}, {longitude.toFixed(4)}
                 </div>
@@ -295,7 +328,7 @@ export default function CitizenDashboard() {
       </motion.div>
 
       {/* Right side — Google Map */}
-      <div style={{ flex: 1 }}>
+      <div className="dashboard-map">
         <EmergencyMap center={mapCenter} directions={directions} routeInfo={routeInfo}>
           {/* Citizen's position */}
           {latitude && longitude && (

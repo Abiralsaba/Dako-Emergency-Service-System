@@ -20,7 +20,7 @@ public interface ResponderRepository extends JpaRepository<Responder, Long> {
 
     // Find approved + online + available responders of a given type within a radius (Haversine)
     @Query(value = """
-        SELECT r.* FROM responders r
+        SELECT r.*, u.* FROM responders r
         JOIN users u ON r.id = u.id
         WHERE r.service_type = :serviceType
           AND r.approval_status = 'APPROVED'
@@ -44,7 +44,7 @@ public interface ResponderRepository extends JpaRepository<Responder, Long> {
 
     // Find all types within radius (for GENERAL emergencies)
     @Query(value = """
-        SELECT r.* FROM responders r
+        SELECT r.*, u.* FROM responders r
         JOIN users u ON r.id = u.id
         WHERE r.approval_status = 'APPROVED'
           AND r.current_status = 'ONLINE'

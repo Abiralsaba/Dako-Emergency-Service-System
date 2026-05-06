@@ -8,4 +8,18 @@ export default defineConfig({
     // sockjs-client uses Node's `global` — polyfill it for the browser
     global: 'globalThis',
   },
+  server: {
+    host: true, // Listen on all network interfaces
+    allowedHosts: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+      '/ws': {
+        target: 'ws://localhost:8080',
+        ws: true,
+      }
+    }
+  }
 })

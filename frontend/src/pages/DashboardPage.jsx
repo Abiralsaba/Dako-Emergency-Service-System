@@ -31,7 +31,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <Navbar />
       {renderDashboard()}
     </div>

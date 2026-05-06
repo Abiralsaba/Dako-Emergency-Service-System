@@ -15,8 +15,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 // Scheduled task that checks for expired offers and escalates dispatch
 @Service
+@Transactional
 public class OfferTimeoutScheduler {
 
     private final EmergencyOfferRepository offerRepo;

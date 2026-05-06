@@ -95,9 +95,11 @@ export default function EmergencyMap({ center, children, directions = null, zoom
 
       {/* ETA / Distance overlay */}
       {routeInfo && (
-        <div style={{
+        <div 
+          className="map-eta-overlay"
+          style={{
           position: 'absolute',
-          bottom: '24px',
+          bottom: '40px',
           left: '50%',
           transform: 'translateX(-50%)',
           background: 'rgba(10, 15, 30, 0.95)',

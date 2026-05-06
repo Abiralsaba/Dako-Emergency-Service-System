@@ -3,7 +3,10 @@ import axios from 'axios';
 // Axios instance with JWT interceptor — all API calls go through here
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  headers: { 'Content-Type': 'application/json' }
+  headers: {
+    'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
+  }
 });
 
 // Request interceptor — attach JWT token to every request
