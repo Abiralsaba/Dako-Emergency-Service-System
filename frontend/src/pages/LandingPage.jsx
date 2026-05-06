@@ -14,6 +14,7 @@ import { useAuth } from '../store/AuthContext';
 import StarField from '../components/3d/StarField';
 import HeroSection from '../components/landing/HeroSection';
 import MarsRevealSection from '../components/landing/MarsRevealSection';
+import EmergencyTriggerSection from '../components/landing/EmergencyTriggerSection';
 
 export default function LandingPage() {
   const { isAuthenticated } = useAuth();
@@ -48,6 +49,8 @@ export default function LandingPage() {
       {/* Scene 2 — Mars surface with service cards */}
       <MarsRevealSection scrollYProgress={scrollYProgress} />
 
+      {/* Scene 3 — Emergency service trigger portals */}
+      <EmergencyTriggerSection />
     </div>
   );
 }
