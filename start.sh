@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Local launcher for the emergency dispatch system.
 # This ensures that when you press Ctrl+C, it completely stops both the frontend and backend.
 trap 'kill 0' SIGINT
 

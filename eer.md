@@ -1169,3 +1169,4 @@ Used by: `Shift.status`
 | **Total**        |                                                                 | **16** |
 | **Enumerations** | Role, ServiceType, EmergencyType, EmergencyStatus, Severity, StationType, VehicleType, VehicleStatus, AccessLevel, NotificationType, DispatchAction, MessageType, MediaType, ShiftType, ShiftStatus | **15** |
 | **Relationships** |                                                                | **24** |
+<!-- Emergency dispatch database reference. -->

@@ -5,6 +5,9 @@ An Uber-like emergency dispatch system for ambulance, fire service, and police, 
 
 MOBILE : https://fanciness-vividness-elevate.ngrok-free.dev
 
+## Project Status
+Active development.
+
 ## Technology Stack
 - **Java:** 25
 - **Spring Boot:** 4.0.5
