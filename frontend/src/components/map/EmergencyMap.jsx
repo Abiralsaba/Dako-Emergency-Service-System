@@ -3,24 +3,6 @@ import { GoogleMap, useJsApiLoader, DirectionsRenderer } from '@react-google-map
 
 const LIBRARIES = ['places', 'geometry'];
 
-const darkMapStyle = [
-  { elementType: "geometry", stylers: [{ color: "#212121" }] },
-  { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#212121" }] },
-  { featureType: "administrative", elementType: "geometry", stylers: [{ color: "#757575" }] },
-  { featureType: "poi", elementType: "geometry", stylers: [{ color: "#181818" }] },
-  { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#1b3a1b" }] },
-  { featureType: "road", elementType: "geometry.fill", stylers: [{ color: "#2c2c2c" }] },
-  { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#8a8a8a" }] },
-  { featureType: "road.arterial", elementType: "geometry", stylers: [{ color: "#373737" }] },
-  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#3c3c3c" }] },
-  { featureType: "road.highway.controlled_access", elementType: "geometry", stylers: [{ color: "#4e4e4e" }] },
-  { featureType: "transit", elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#000000" }] },
-  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#3d3d3d" }] },
-];
-
 const containerStyle = { width: '100%', height: '100%' };
 
 export default function EmergencyMap({ center, children, directions = null, zoom = 14, routeInfo, onMapLoad }) {
@@ -64,7 +46,6 @@ export default function EmergencyMap({ center, children, directions = null, zoom
         zoom={zoom}
         onLoad={onLoad}
         options={{
-          styles: darkMapStyle,
           disableDefaultUI: true,
           zoomControl: true,
           mapTypeControl: false,
@@ -80,9 +61,9 @@ export default function EmergencyMap({ center, children, directions = null, zoom
             options={{
               suppressMarkers: true,
               polylineOptions: {
-                strokeColor: '#00f0ff',
+                strokeColor: '#e11d48', // High-visibility red for emergency route on a light map
                 strokeOpacity: 1,
-                strokeWeight: 5,
+                strokeWeight: 6,
                 zIndex: 10,
               },
             }}

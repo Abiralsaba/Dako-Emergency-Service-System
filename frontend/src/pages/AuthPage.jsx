@@ -7,8 +7,8 @@
   Color palette matched to the background's purple/amber tones.
   Tabs for Citizen vs Responder vs Admin, toggles Login vs Register.
 */
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, User, UserCog, LogIn, UserPlus,
@@ -19,7 +19,7 @@ import {
 import { useAuth } from '../store/AuthContext';
 import authService from '../services/authService';
 import toast from 'react-hot-toast';
-import bgImg from '../assets/pixel-art-vacation-background/7392521.jpg';
+import bgImg from '../assets/auth-bg.png';
 
 const SERVICE_TYPES = [
   { key: 'AMBULANCE', label: 'Ambulance', icon: Heart, color: '#10b981' },
@@ -146,16 +146,34 @@ export default function AuthPage() {
     exit: { opacity: 0, transition: { duration: 0.15 } }
   };
   const itemVariants = {
-    hidden: { opacity: 0, x: -16 },
-    show: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 260, damping: 22 } }
+    hidden: { opacity: 0, x: -30, filter: 'blur(10px)' },
+    show: { opacity: 1, x: 0, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 300, damping: 24, mass: 1 } }
   };
 
   // Accent color changes based on active role
-  const accentMap = { USER: '#a78bfa', RESPONDER: '#e11d48', ADMIN: '#fb923c' };
-  const accent = accentMap[activeRole] || '#a78bfa';
+  const accentMap = { USER: '#10b981', RESPONDER: '#e11d48', ADMIN: '#f59e0b' };
+  const accent = accentMap[activeRole] || '#10b981';
+
+  // 3D Tilt Effect
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const rotateXV = useTransform(mouseY, [-0.5, 0.5], [8, -8]);
+  const rotateYV = useTransform(mouseX, [-0.5, 0.5], [-8, 8]);
+
+  const handleMouseMove = (e) => {
+    const { clientX, clientY } = e;
+    const { innerWidth, innerHeight } = window;
+    const x = clientX / innerWidth - 0.5;
+    const y = clientY / innerHeight - 0.5;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
 
   return (
-    <div style={{
+    <div 
+      onMouseMove={handleMouseMove}
+      style={{
       minHeight: '100vh',
       width: '100%',
       position: 'relative',
@@ -164,47 +182,81 @@ export default function AuthPage() {
       justifyContent: 'center',
       padding: '40px 20px',
       overflow: 'hidden',
-      background: '#1a0a2e',
+      background: '#042f1d',
     }}>
 
       {/* ── RAW Background Image ── */}
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-        <img
+        <motion.img
           src={bgImg}
-          alt="Pixel art camping night scene"
+          alt="Emergency rescue vehicles background"
+          initial={{ scale: 1.15, filter: 'blur(10px)' }}
+          animate={{ scale: 1.05, filter: 'blur(0px)' }}
+          transition={{ duration: 15, ease: 'easeOut' }}
           style={{
             width: '100%', height: '100%',
             objectFit: 'cover', objectPosition: 'center',
-            display: 'block', imageRendering: 'pixelated',
+            display: 'block',
+            willChange: 'transform'
           }}
         />
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(180deg, rgba(26,10,46,0.35) 0%, rgba(26,10,46,0.15) 40%, rgba(26,10,46,0.5) 100%)',
-        }} />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2 }}
+          style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(180deg, rgba(4,47,29,0.5) 0%, rgba(4,47,29,0.3) 40%, rgba(4,47,29,0.7) 100%)',
+            backdropFilter: 'blur(2px)'
+          }}
+        />
       </div>
 
-      {/* Floating particles */}
-      {[...Array(6)].map((_, i) => (
+      {/* Floating particles (sparks/embers) */}
+      {[...Array(12)].map((_, i) => (
         <motion.div
           key={i}
-          animate={{ y: [0, -30, 0], opacity: [0, 0.6, 0] }}
-          transition={{ duration: 3 + i * 0.5, repeat: Infinity, delay: i * 0.8 }}
+          initial={{ y: 0, opacity: 0, scale: Math.random() * 0.5 + 0.5 }}
+          animate={{ 
+            y: [-20, -100, -200], 
+            x: [0, Math.random() * 50 - 25, Math.random() * 50 - 25],
+            opacity: [0, 0.8, 0] 
+          }}
+          transition={{ 
+            duration: 4 + Math.random() * 4, 
+            repeat: Infinity, 
+            delay: Math.random() * 5,
+            ease: "easeInOut"
+          }}
           style={{
-            position: 'absolute', width: '3px', height: '3px', borderRadius: '50%',
-            background: '#fbbf24', left: `${20 + i * 10}%`, bottom: `${30 + i * 5}%`,
-            zIndex: 1, boxShadow: '0 0 6px #fbbf24',
+            position: 'absolute', width: '4px', height: '4px', borderRadius: '50%',
+            background: i % 3 === 0 ? '#10b981' : '#fbbf24', // Mix of green and amber sparks
+            left: `${10 + Math.random() * 80}%`, bottom: `${10 + Math.random() * 40}%`,
+            zIndex: 1, boxShadow: `0 0 10px ${i % 3 === 0 ? '#10b981' : '#fbbf24'}`
           }}
         />
       ))}
 
       {/* ── Main Card ── */}
       <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '560px' }}
+        initial={{ opacity: 0, y: 70, scale: 0.9, rotateX: 15 }}
+        animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+        style={{ 
+          position: 'relative', zIndex: 2, width: '100%', maxWidth: '560px', perspective: '1000px',
+          rotateX: rotateXV, rotateY: rotateYV, transformStyle: 'preserve-3d'
+        }}
       >
+        {/* Subtle dynamic highlight matching the accent color to give depth */}
+        <motion.div 
+          style={{
+            position: 'absolute', inset: -2, borderRadius: '18px', zIndex: -1,
+            background: `radial-gradient(circle at 50% 0%, ${accent}40 0%, transparent 60%)`,
+            filter: 'blur(15px)',
+            opacity: 0.8
+          }}
+        />
+
         {/* Back button */}
         <motion.button
           onClick={() => navigate('/')}
@@ -223,9 +275,9 @@ export default function AuthPage() {
         {/* ── Role Tabs: User / Responder / Admin ── */}
         <div style={{ display: 'flex', position: 'relative', zIndex: 3 }}>
           {[
-            { key: 'USER', label: 'Citizen', icon: User, color: '#a78bfa' },
+            { key: 'USER', label: 'Citizen', icon: User, color: '#10b981' },
             { key: 'RESPONDER', label: 'Responder', icon: Siren, color: '#e11d48' },
-            { key: 'ADMIN', label: 'Admin', icon: UserCog, color: '#fb923c' },
+            { key: 'ADMIN', label: 'Admin', icon: UserCog, color: '#f59e0b' },
           ].map((tab) => {
             const active = activeRole === tab.key;
             const TabIcon = tab.icon;
@@ -237,14 +289,14 @@ export default function AuthPage() {
                 style={{
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   gap: '8px', padding: '13px 16px',
-                  background: active ? 'rgba(15, 10, 30, 0.92)' : 'rgba(15, 10, 30, 0.4)',
+                  background: active ? 'rgba(4, 30, 20, 0.4)' : 'rgba(4, 30, 20, 0.2)',
                   border: `1px solid ${active ? tab.color + '50' : 'rgba(255,255,255,0.06)'}`,
                   borderBottom: active ? 'none' : '1px solid rgba(255,255,255,0.08)',
                   borderRadius: '14px 14px 0 0',
-                  color: active ? tab.color : '#94a3b8',
+                  color: active ? tab.color : '#a7f3d0',
                   fontFamily: "'Orbitron', monospace", fontSize: '11px', fontWeight: 800,
                   letterSpacing: '1.5px', cursor: 'pointer', textTransform: 'uppercase',
-                  transition: 'all 0.3s ease', position: 'relative', backdropFilter: 'blur(16px)',
+                  transition: 'all 0.3s ease', position: 'relative', backdropFilter: 'blur(8px)',
                 }}
               >
                 {active && (
@@ -266,7 +318,7 @@ export default function AuthPage() {
 
         {/* ── Code Editor Window ── */}
         <div style={{
-          background: 'rgba(15, 10, 30, 0.92)', backdropFilter: 'blur(20px)',
+          background: 'rgba(4, 30, 20, 0.4)', backdropFilter: 'blur(8px)',
           border: '1px solid rgba(255,255,255,0.08)', borderTop: 'none',
           borderRadius: '0 0 18px 18px', overflow: 'hidden',
           boxShadow: `0 30px 60px rgba(0,0,0,0.7), 0 0 80px ${accent}08`,
@@ -275,7 +327,7 @@ export default function AuthPage() {
           {/* Terminal title bar */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '13px 22px', background: 'rgba(0,0,0,0.35)',
+            padding: '13px 22px', background: 'rgba(0,0,0,0.3)',
             borderBottom: '1px solid rgba(255,255,255,0.06)',
           }}>
             <div style={{ display: 'flex', gap: '8px' }}>

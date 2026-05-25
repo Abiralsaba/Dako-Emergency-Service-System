@@ -196,7 +196,7 @@ export default function MarsRevealSection() {
               color: '#e5e7eb',
               letterSpacing: '0.5px'
             }}>
-              Unified Dispatch System
+              DAKO Unified System
             </span>
           </div>
 
@@ -211,7 +211,7 @@ export default function MarsRevealSection() {
           }}>
             Three Services.{' '}
             <span style={{ fontWeight: 600, color: '#f8fafc' }}>
-              One Mission.
+              One Bangladesh.
             </span>
           </h2>
           <p style={{
@@ -223,7 +223,7 @@ export default function MarsRevealSection() {
             lineHeight: 1.6,
             fontWeight: 400
           }}>
-            Coordinating medical, fire, and police resources through an intelligent network to ensure the fastest response anywhere on the frontier.
+            Coordinating medical, fire, and police resources through an intelligent network to ensure the fastest response anywhere in the country.
           </p>
         </motion.div>
 

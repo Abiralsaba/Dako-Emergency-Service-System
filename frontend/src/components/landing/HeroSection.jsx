@@ -115,7 +115,7 @@ export default function HeroSection({ scrollYProgress }) {
             marginBottom: '16px',
           }}
         >
-          Emergency Dispatch System
+          National Emergency System — Bangladesh
         </motion.p>
 
         {/* Main DAKO title */}
@@ -151,7 +151,7 @@ export default function HeroSection({ scrollYProgress }) {
             letterSpacing: '1px',
           }}
         >
-          Protecting lives across the frontier
+          Protecting lives across the nation
         </motion.p>
 
         {/* Accent line below */}

@@ -33,7 +33,7 @@ export default function Navbar() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <Siren size={22} color="var(--accent)" />
         <span style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '-0.5px' }}>
-          Dispatch<span style={{ color: 'var(--accent)' }}>OS</span>
+          DAKO<span style={{ color: 'var(--accent)' }}> System</span>
         </span>
       </div>
 
