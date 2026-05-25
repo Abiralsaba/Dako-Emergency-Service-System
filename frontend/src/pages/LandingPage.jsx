@@ -41,10 +41,10 @@ export default function LandingPage() {
       {/* Fixed starfield background — always visible */}
       <StarField scrollProgress={starScroll} />
 
-      {/* Scene 1 — Spaceship window with User Login/Register */}
+      {/* Scene 1 — Hero section with DAKO branding and Login/Register */}
       <HeroSection scrollYProgress={scrollYProgress} />
 
-      {/* Scene 2 — Mars surface with service cards */}
+      {/* Scene 2 — Emergency services showcase with Bangladesh stats */}
       <MarsRevealSection scrollYProgress={scrollYProgress} />
     </div>
   );

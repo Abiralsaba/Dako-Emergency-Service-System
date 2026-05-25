@@ -1,35 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 /* ═══════════════════════════════════════════════
-   DAKO — Cinematic Dark Design System
+   DAKO — Bangladeshi National Identity Design System
+   🇧🇩 Inspired by the flag, Nakshi Kantha, and Jamdani
    ═══════════════════════════════════════════════ */
 
 :root {
-  /* Deep space backgrounds */
-  --bg-deep: #030712;
-  --bg-surface: #0a0f1e;
-  --bg-elevated: #111827;
+  /* Bangladesh flag–inspired backgrounds */
+  --bg-deep: #0C1219;
+  --bg-surface: #111D2B;
+  --bg-elevated: #1A2836;
 
-  /* Accent palette */
-  --accent: #00f0ff;
-  --accent-glow: rgba(0, 240, 255, 0.3);
-  --accent-emerald: #10b981;
-  --accent-emerald-glow: rgba(16, 185, 129, 0.4);
-  --accent-gold: #f59e0b;
+  /* 🇧🇩 National accent palette */
+  --accent: #006A4E;
+  --accent-glow: rgba(0, 106, 78, 0.35);
+  --accent-light: #00896A;
+  --accent-red: #F42A41;
+  --accent-red-glow: rgba(244, 42, 65, 0.35);
+  --accent-gold: #D4A853;
+  --accent-gold-glow: rgba(212, 168, 83, 0.35);
 
-  /* Service colors */
-  --police-blue: #3b82f6;
-  --ambulance-green: #10b981;
-  --fire-red: #ef4444;
+  /* Service-specific colors (warm tones) */
+  --police-blue: #3A7BD5;
+  --ambulance-green: #10B981;
+  --fire-red: #EF4444;
+  --emergency-gold: #D4A853;
 
-  /* Text */
-  --text-primary: #e2e8f0;
-  --text-secondary: #64748b;
-  --text-muted: #475569;
+  /* Text hierarchy */
+  --text-primary: #E8EDF2;
+  --text-secondary: #8899AA;
+  --text-muted: #5A6A7A;
 
-  /* Surfaces */
-  --surface: rgba(10, 15, 30, 0.85);
-  --surface-border: rgba(0, 240, 255, 0.1);
+  /* Surfaces — warm-tinted glassmorphism */
+  --surface: rgba(17, 29, 43, 0.88);
+  --surface-border: rgba(0, 106, 78, 0.15);
   --surface-border-subtle: rgba(255, 255, 255, 0.06);
 }
 
@@ -53,36 +57,36 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Smooth transitions globally */
+/* Disable tap highlight on mobile */
 *, *::before, *::after {
   -webkit-tap-highlight-color: transparent;
 }
 
 /* ═══════════════════════════════════
-   Typography
+   Typography — Poppins display font
    ═══════════════════════════════════ */
 
 .font-display {
-  font-family: 'Orbitron', monospace;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* ═══════════════════════════════════
-   Glassmorphism — Dark Cinematic
+   Glassmorphism — Warm Green Tint
    ═══════════════════════════════════ */
 
 .glass-panel {
-  background: rgba(10, 15, 30, 0.8);
+  background: rgba(17, 29, 43, 0.82);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 106, 78, 0.18);
   box-shadow:
-    0 0 30px rgba(0, 240, 255, 0.05),
-    0 20px 60px -10px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(0, 106, 78, 0.06),
+    0 20px 60px -10px rgba(0, 0, 0, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .glass-panel-subtle {
-  background: rgba(10, 15, 30, 0.6);
+  background: rgba(17, 29, 43, 0.6);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -90,7 +94,8 @@ body {
 }
 
 /* ═══════════════════════════════════
-   HUD-style border glow animation
+   Kantha Border — Animated accent border
+   (inspired by Nakshi Kantha embroidery)
    ═══════════════════════════════════ */
 
 .hud-border {
@@ -105,20 +110,20 @@ body {
   padding: 1px;
   background: linear-gradient(
     135deg,
-    rgba(0, 240, 255, 0.4),
-    rgba(16, 185, 129, 0.2),
-    rgba(0, 240, 255, 0.1),
-    rgba(16, 185, 129, 0.4)
+    rgba(0, 106, 78, 0.5),
+    rgba(212, 168, 83, 0.3),
+    rgba(0, 106, 78, 0.15),
+    rgba(212, 168, 83, 0.5)
   );
   background-size: 300% 300%;
-  animation: hudShift 6s ease-in-out infinite;
+  animation: kanthaShift 6s ease-in-out infinite;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
 }
 
-@keyframes hudShift {
+@keyframes kanthaShift {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
@@ -143,8 +148,8 @@ body {
 
 .input-field:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow), 0 0 20px rgba(0, 240, 255, 0.1);
-  background: rgba(0, 240, 255, 0.03);
+  box-shadow: 0 0 0 3px var(--accent-glow), 0 0 20px rgba(0, 106, 78, 0.12);
+  background: rgba(0, 106, 78, 0.04);
 }
 
 .input-field::placeholder {
@@ -152,19 +157,19 @@ body {
 }
 
 /* ═══════════════════════════════════
-   Primary Button — Cyan Glow
+   Primary Button — Green-Gold Gradient
    ═══════════════════════════════════ */
 
 .btn-primary {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #00f0ff, #10b981);
-  color: #030712;
+  background: linear-gradient(135deg, #006A4E, #00896A);
+  color: #ffffff;
   border: none;
   border-radius: 10px;
   font-weight: 700;
   font-size: 15px;
-  font-family: 'Orbitron', monospace;
+  font-family: 'Poppins', sans-serif;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
@@ -177,7 +182,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.15), transparent);
   transform: translateX(-100%);
   transition: transform 0.5s ease;
 }
@@ -187,7 +192,7 @@ body {
 }
 
 .btn-primary:hover {
-  box-shadow: 0 0 30px rgba(0, 240, 255, 0.4), 0 0 60px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 30px rgba(0, 106, 78, 0.4), 0 0 60px rgba(212, 168, 83, 0.15);
   transform: translateY(-2px);
 }
 
@@ -199,13 +204,13 @@ body {
 }
 
 /* ═══════════════════════════════════
-   SOS Pulse Animation
+   SOS Pulse Animation — 🇧🇩 Flag Red
    ═══════════════════════════════════ */
 
 @keyframes sosPulse {
-  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
-  50% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(244, 42, 65, 0.5); }
+  50% { box-shadow: 0 0 0 20px rgba(244, 42, 65, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(244, 42, 65, 0); }
 }
 
 /* ═══════════════════════════════════
@@ -231,18 +236,18 @@ body {
   50% { transform: translateY(-10px); }
 }
 
-@keyframes scanline {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
-}
-
 @keyframes pulse-glow {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
 }
 
+@keyframes gentleGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(0, 106, 78, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(0, 106, 78, 0.4); }
+}
+
 /* ═══════════════════════════════════
-   Scrollbar — Dark Theme
+   Scrollbar — Warm Green Theme
    ═══════════════════════════════════ */
 
 ::-webkit-scrollbar {
@@ -254,21 +259,21 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 240, 255, 0.2);
+  background: rgba(0, 106, 78, 0.25);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 240, 255, 0.4);
+  background: rgba(0, 106, 78, 0.45);
 }
 
 /* ═══════════════════════════════════
-   Selection Color
+   Selection Color — Bangladesh Green
    ═══════════════════════════════════ */
 
 ::selection {
   background: var(--accent);
-  color: var(--bg-deep);
+  color: #ffffff;
 }
 
 /* ═══════════════════════════════════
@@ -296,7 +301,7 @@ body {
   position: relative;
 }
 
-/* Subtle top accent line on sidebar */
+/* Accent top line — green to gold gradient */
 .dashboard-sidebar::before {
   content: '';
   position: absolute;
@@ -304,11 +309,11 @@ body {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), var(--accent-emerald), transparent);
+  background: linear-gradient(90deg, transparent, var(--accent), var(--accent-gold), transparent);
   opacity: 0.6;
 }
 
-/* Nicer scrollbar inside sidebar */
+/* Sidebar scrollbar */
 .dashboard-sidebar::-webkit-scrollbar {
   width: 4px;
 }
@@ -316,7 +321,7 @@ body {
   background: transparent;
 }
 .dashboard-sidebar::-webkit-scrollbar-thumb {
-  background: rgba(0, 240, 255, 0.15);
+  background: rgba(0, 106, 78, 0.2);
   border-radius: 4px;
 }
 
@@ -327,7 +332,7 @@ body {
   min-height: 0;
 }
 
-/* Map border glow overlay */
+/* Map left edge glow — green to gold */
 .dashboard-map::before {
   content: '';
   position: absolute;
@@ -335,7 +340,7 @@ body {
   left: 0;
   bottom: 0;
   width: 3px;
-  background: linear-gradient(180deg, var(--accent), transparent 30%, transparent 70%, var(--accent-emerald));
+  background: linear-gradient(180deg, var(--accent), transparent 30%, transparent 70%, var(--accent-gold));
   z-index: 5;
   opacity: 0.4;
   pointer-events: none;
@@ -371,7 +376,7 @@ body {
     height: 40vh;
     min-height: 280px;
     flex: none;
-    border-top: 2px solid rgba(0, 240, 255, 0.15);
+    border-top: 2px solid rgba(0, 106, 78, 0.2);
   }
 
   .dashboard-map::before {

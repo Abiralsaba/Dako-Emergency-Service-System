@@ -8,8 +8,8 @@ const MARKER_COLORS = {
   FIRE: '#ef4444',
   FIRE_SERVICE: '#ef4444',
   EMERGENCY_CAR: '#f59e0b',
-  CITIZEN: '#e11d48',
-  DEFAULT: '#00f0ff',
+  CITIZEN: '#F42A41',
+  DEFAULT: '#006A4E',
 };
 
 export default function ServiceMarker({ position, type, label, details }) {

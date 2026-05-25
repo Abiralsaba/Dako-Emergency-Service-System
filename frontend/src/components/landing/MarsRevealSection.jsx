@@ -1,39 +1,46 @@
+/*
+  Services Section — Second viewport of the landing page.
+  Showcases the three core emergency services with
+  Bangladesh-specific context and national statistics.
+*/
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { ShieldCheck, Flame, Stethoscope, Clock, Map, Users, HeartPulse, Sparkles } from 'lucide-react';
-// Video background replaced with CSS gradient (original asset removed)
 
 const services = [
   {
     icon: Stethoscope,
-    title: 'Medical Response',
-    desc: 'Rapid-deployment medical teams equipped with advanced life support, reaching any colony sector under 4 minutes.',
-    color: '#ef4444', 
-    stat: '98.7%',
-    statLabel: 'Save Rate',
+    title: 'জরুরি চিকিৎসা',
+    titleEn: 'Medical Response',
+    desc: 'Advanced life-support ambulance teams deployed across all 64 districts, ensuring rapid medical care reaches every corner of Bangladesh.',
+    color: '#10B981',
+    stat: '< 4 min',
+    statLabel: 'Response Time',
   },
   {
     icon: Flame,
-    title: 'Fire Intercept',
-    desc: 'Thermal detection networks instantly deploy suppression units, ensuring zero-delay response to critical incidents.',
-    color: '#f97316',
-    stat: '< 2 min',
-    statLabel: 'Deploy Time',
+    title: 'অগ্নিনির্বাপণ',
+    titleEn: 'Fire Service',
+    desc: 'Bangladesh Fire Service & Civil Defence units equipped with modern suppression systems for industrial, residential, and wildfire emergencies.',
+    color: '#EF4444',
+    stat: '24/7',
+    statLabel: 'Active Duty',
   },
   {
     icon: ShieldCheck,
-    title: 'Law Enforcement',
-    desc: 'Community-focused patrol units providing safety and security, guided by real-time spatial analysis.',
-    color: '#3b82f6',
-    stat: '24/7',
-    statLabel: 'Coverage',
+    title: 'আইন প্রয়োগ',
+    titleEn: 'Law Enforcement',
+    desc: 'Bangladesh Police community patrol units providing safety and security through real-time coordination and GPS-based dispatch.',
+    color: '#3A7BD5',
+    stat: '999',
+    statLabel: 'Emergency Hotline',
   },
 ];
 
 const stats = [
-  { icon: Clock, label: 'Average Response', value: '< 3 minutes' },
-  { icon: Map, label: 'Protected Area', value: '12,000 km²' },
-  { icon: Users, label: 'Active Personnel', value: '340+' },
+  { icon: Clock, label: 'Average Response', value: '< 4 min' },
+  { icon: Map, label: 'Coverage Area', value: '64 Districts' },
+  { icon: Users, label: '8 Divisions', value: 'Nationwide' },
   { icon: HeartPulse, label: 'System Uptime', value: '99.9%' },
 ];
 
@@ -50,10 +57,10 @@ function ServiceCard({ service, index }) {
       whileHover={{ y: -4, transition: { duration: 0.3 } }}
       style={{
         borderRadius: '16px',
-        background: 'rgba(20, 20, 22, 0.4)',
+        background: 'rgba(17, 29, 43, 0.5)',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        border: '1px solid rgba(0,106,78,0.12)',
         padding: '40px 32px',
         display: 'flex',
         flexDirection: 'column',
@@ -76,15 +83,23 @@ function ServiceCard({ service, index }) {
         </div>
         <div>
           <h3 style={{
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Poppins', sans-serif",
             fontSize: '20px',
-            fontWeight: 500,
+            fontWeight: 600,
             color: '#f8fafc',
             margin: 0,
             letterSpacing: '-0.5px'
           }}>
             {service.title}
           </h3>
+          <span style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '13px',
+            color: '#8899AA',
+            fontWeight: 400,
+          }}>
+            {service.titleEn}
+          </span>
         </div>
       </div>
 
@@ -92,7 +107,7 @@ function ServiceCard({ service, index }) {
         fontFamily: "'Inter', sans-serif",
         fontSize: '15px',
         lineHeight: 1.6,
-        color: '#94a3b8',
+        color: '#8899AA',
         margin: 0,
         fontWeight: 400
       }}>
@@ -105,10 +120,10 @@ function ServiceCard({ service, index }) {
         alignItems: 'baseline',
         gap: '8px',
         paddingTop: '20px',
-        borderTop: '1px solid rgba(255,255,255,0.05)'
+        borderTop: '1px solid rgba(0,106,78,0.1)'
       }}>
         <span style={{
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Poppins', sans-serif",
           fontSize: '24px',
           fontWeight: 300,
           color: service.color,
@@ -119,8 +134,8 @@ function ServiceCard({ service, index }) {
         <span style={{
           fontFamily: "'Inter', sans-serif",
           fontSize: '13px',
-          color: '#64748b',
-          fontWeight: 400
+          color: '#5A6A7A',
+          fontWeight: 500
         }}>
           {service.statLabel}
         </span>
@@ -135,7 +150,7 @@ export default function MarsRevealSection() {
 
   return (
     <section
-      id="mars-section"
+      id="services-section"
       ref={sectionRef}
       style={{
         position: 'relative',
@@ -150,20 +165,20 @@ export default function MarsRevealSection() {
         overflow: 'hidden',
       }}
     >
-      {/* ── GRADIENT BACKGROUND (replaces missing video) ── */}
+      {/* Background gradient — warm green tones */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
         <div style={{
           width: '100%', height: '100%',
-          background: 'radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.15) 0%, rgba(0,0,0,0.95) 70%)',
+          background: 'radial-gradient(ellipse at 50% 50%, rgba(0,106,78,0.12) 0%, rgba(12,18,25,0.98) 70%)',
         }} />
-        {/* Vignette overlay */}
+        {/* Vignette */}
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.9) 100%)',
+          background: 'linear-gradient(180deg, rgba(12,18,25,0.8) 0%, rgba(12,18,25,0.3) 40%, rgba(12,18,25,0.3) 60%, rgba(12,18,25,0.9) 100%)',
         }} />
       </div>
 
-      {/* ── Content ── */}
+      {/* Content */}
       <div style={{
         position: 'relative',
         zIndex: 10,
@@ -177,53 +192,66 @@ export default function MarsRevealSection() {
           transition={{ duration: 1, ease: [0.25, 1, 0.5, 1] }}
           style={{ textAlign: 'center', marginBottom: '80px' }}
         >
+          {/* Badge pill */}
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
             borderRadius: '100px',
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'rgba(0,106,78,0.08)',
+            border: '1px solid rgba(0,106,78,0.2)',
             backdropFilter: 'blur(10px)',
             marginBottom: '24px'
           }}>
-            <Sparkles size={14} color="#e5e7eb" strokeWidth={1.5} />
+            <Sparkles size={14} color="#D4A853" strokeWidth={1.5} />
             <span style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Poppins', sans-serif",
               fontSize: '12px',
               fontWeight: 500,
-              color: '#e5e7eb',
-              letterSpacing: '0.5px'
+              color: '#D4A853',
+              letterSpacing: '1px'
             }}>
-              DAKO Unified System
+              DAKO জরুরি সেবা
             </span>
           </div>
 
           <h2 style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: 'clamp(40px, 6vw, 72px)',
+            fontFamily: "'Poppins', sans-serif",
+            fontSize: 'clamp(36px, 6vw, 68px)',
             fontWeight: 300,
             color: '#ffffff',
-            margin: '0 0 24px',
+            margin: '0 0 12px',
             lineHeight: 1.1,
             letterSpacing: '-2px',
           }}>
-            Three Services.{' '}
-            <span style={{ fontWeight: 600, color: '#f8fafc' }}>
-              One Bangladesh.
+            তিন সেবা।{' '}
+            <span style={{ fontWeight: 700, color: '#f8fafc' }}>
+              এক বাংলাদেশ।
             </span>
           </h2>
+
           <p style={{
             fontFamily: "'Inter', sans-serif",
-            fontSize: '18px',
-            color: '#94a3b8',
+            fontSize: '16px',
+            color: '#8899AA',
+            marginBottom: '4px',
+            fontWeight: 400,
+            letterSpacing: '2px',
+          }}>
+            Three Services. One Bangladesh.
+          </p>
+
+          <p style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '16px',
+            color: '#8899AA',
             maxWidth: '600px',
-            margin: '0 auto',
+            margin: '16px auto 0',
             lineHeight: 1.6,
             fontWeight: 400
           }}>
-            Coordinating medical, fire, and police resources through an intelligent network to ensure the fastest response anywhere in the country.
+            Coordinating medical, fire, and police resources through an intelligent dispatch network — serving every division, district, and upazila.
           </p>
         </motion.div>
 
@@ -235,7 +263,7 @@ export default function MarsRevealSection() {
           marginBottom: '80px',
         }}>
           {services.map((s, i) => (
-            <ServiceCard key={s.title} service={s} index={i} />
+            <ServiceCard key={s.titleEn} service={s} index={i} />
           ))}
         </div>
 
@@ -259,15 +287,15 @@ export default function MarsRevealSection() {
               }}
             >
               <div style={{
-                color: '#e2e8f0'
+                color: '#D4A853'
               }}>
                 <stat.icon size={28} strokeWidth={1} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: '24px',
-                  fontWeight: 300,
+                  fontFamily: "'Poppins', sans-serif",
+                  fontSize: '22px',
+                  fontWeight: 400,
                   color: '#ffffff',
                   letterSpacing: '-0.5px'
                 }}>
@@ -276,7 +304,7 @@ export default function MarsRevealSection() {
                 <span style={{
                   fontFamily: "'Inter', sans-serif",
                   fontSize: '12px',
-                  color: '#64748b',
+                  color: '#5A6A7A',
                   fontWeight: 500,
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'

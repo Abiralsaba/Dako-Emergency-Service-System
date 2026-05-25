@@ -1,52 +1,38 @@
-/*
-  =========================================
-  AUTH PAGE - DAKO EMERGENCY SYSTEM
-  =========================================
-  Full-page authentication with code-editor themed design.
-  Pixel-art campfire background displayed raw (no zoom/blur).
-  Color palette matched to the background's purple/amber tones.
-  Tabs for Citizen vs Responder vs Admin, toggles Login vs Register.
-*/
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, User, UserCog, LogIn, UserPlus,
   ArrowRight, Loader, Eye, EyeOff,
-  Phone, Lock, MapPin, IdCard, Contact, Terminal, Sparkles,
+  Phone, Lock, MapPin, IdCard, Contact,
   Siren, Car, Shield, Heart, Flame
 } from 'lucide-react';
 import { useAuth } from '../store/AuthContext';
 import authService from '../services/authService';
 import toast from 'react-hot-toast';
-import bgImg from '../assets/auth-bg.png';
 
 const SERVICE_TYPES = [
   { key: 'AMBULANCE', label: 'Ambulance', icon: Heart, color: '#10b981' },
-  { key: 'FIRE_SERVICE', label: 'Fire Service', icon: Flame, color: '#ef4444' },
+  { key: 'FIRE_SERVICE', label: 'Fire Service', icon: Flame, color: '#F42A41' },
   { key: 'POLICE', label: 'Police', icon: Shield, color: '#3b82f6' },
-  { key: 'EMERGENCY_CAR', label: 'Emergency Car', icon: Car, color: '#f59e0b' },
+  { key: 'EMERGENCY_CAR', label: 'Emergency Car', icon: Car, color: '#D4A853' },
 ];
 
 export default function AuthPage() {
   const [searchParams] = useSearchParams();
   const initialMode = searchParams.get('mode') || 'login';
 
-  // Core state
   const [activeRole, setActiveRole] = useState('USER');
   const [isLogin, setIsLogin] = useState(initialMode === 'login');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Auth context & navigation
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Login form state
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
 
-  // Registration form state
   const [formData, setFormData] = useState({
     fullName: '',
     nid: '',
@@ -61,7 +47,6 @@ export default function AuthPage() {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // Submit login to backend
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -76,7 +61,6 @@ export default function AuthPage() {
     setLoading(false);
   };
 
-  // Submit registration — routes to citizen, responder, or admin endpoint
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -116,7 +100,7 @@ export default function AuthPage() {
         });
       }
       login(res.data);
-      const msg = activeRole === 'RESPONDER' 
+      const msg = activeRole === 'RESPONDER'
         ? 'Registration successful! Awaiting admin approval.'
         : 'Registration successful!';
       toast.success(msg);
@@ -127,234 +111,301 @@ export default function AuthPage() {
     setLoading(false);
   };
 
-  // Line count for the code-editor gutter
-  const getLineCount = () => {
-    if (isLogin) return 6;
-    if (activeRole === 'RESPONDER') return 10;
-    if (activeRole === 'ADMIN') return 8;
-    return 10;
-  };
-  const lineCount = getLineCount();
-
-  // Stagger animations for form fields
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.07, delayChildren: 0.05 }
+      transition: { staggerChildren: 0.06, delayChildren: 0.05 }
     },
     exit: { opacity: 0, transition: { duration: 0.15 } }
   };
+
   const itemVariants = {
-    hidden: { opacity: 0, x: -30, filter: 'blur(10px)' },
-    show: { opacity: 1, x: 0, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 300, damping: 24, mass: 1 } }
+    hidden: { opacity: 0, y: 16 },
+    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 26 } }
   };
 
-  // Accent color changes based on active role
-  const accentMap = { USER: '#10b981', RESPONDER: '#e11d48', ADMIN: '#f59e0b' };
-  const accent = accentMap[activeRole] || '#10b981';
-
-  // 3D Tilt Effect
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const rotateXV = useTransform(mouseY, [-0.5, 0.5], [8, -8]);
-  const rotateYV = useTransform(mouseX, [-0.5, 0.5], [-8, 8]);
-
-  const handleMouseMove = (e) => {
-    const { clientX, clientY } = e;
-    const { innerWidth, innerHeight } = window;
-    const x = clientX / innerWidth - 0.5;
-    const y = clientY / innerHeight - 0.5;
-    mouseX.set(x);
-    mouseY.set(y);
+  const roleTabColors = {
+    USER: '#006A4E',
+    RESPONDER: '#F42A41',
+    ADMIN: '#D4A853',
   };
+
+  const accent = roleTabColors[activeRole] || '#006A4E';
 
   return (
-    <div 
-      onMouseMove={handleMouseMove}
-      style={{
+    <div style={{
       minHeight: '100vh',
       width: '100%',
-      position: 'relative',
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '40px 20px',
-      overflow: 'hidden',
-      background: '#042f1d',
+      background: '#0C1219',
     }}>
 
-      {/* ── RAW Background Image ── */}
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-        <motion.img
-          src={bgImg}
-          alt="Emergency rescue vehicles background"
-          initial={{ scale: 1.15, filter: 'blur(10px)' }}
-          animate={{ scale: 1.05, filter: 'blur(0px)' }}
-          transition={{ duration: 15, ease: 'easeOut' }}
+      {/* ── Left Decorative Panel ── */}
+      <div style={{
+        width: '40%',
+        minHeight: '100vh',
+        background: 'linear-gradient(170deg, #006A4E 0%, #004D38 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+        padding: '60px 40px',
+      }}
+        className="auth-left-panel"
+      >
+        {/* Bangladesh flag red circle */}
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 0.15 }}
+          transition={{ duration: 1.5, ease: 'easeOut', delay: 0.3 }}
           style={{
-            width: '100%', height: '100%',
-            objectFit: 'cover', objectPosition: 'center',
-            display: 'block',
-            willChange: 'transform'
+            position: 'absolute',
+            width: '320px',
+            height: '320px',
+            borderRadius: '50%',
+            background: '#F42A41',
+            top: '50%',
+            left: '45%',
+            transform: 'translate(-50%, -50%)',
           }}
         />
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 0.08 }}
+          transition={{ duration: 2, ease: 'easeOut', delay: 0.6 }}
+          style={{
+            position: 'absolute',
+            width: '500px',
+            height: '500px',
+            borderRadius: '50%',
+            border: '1px solid rgba(255,255,255,0.1)',
+            top: '50%',
+            left: '45%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        />
+
+        <motion.div
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            textAlign: 'center',
+          }}
+        >
+          <div style={{
+            fontFamily: "'Poppins', sans-serif",
+            fontSize: '48px',
+            fontWeight: 800,
+            color: '#FFFFFF',
+            letterSpacing: '6px',
+            lineHeight: 1.1,
+            marginBottom: '16px',
+            textShadow: '0 2px 20px rgba(0,0,0,0.3)',
+          }}>
+            DAKO
+          </div>
+
+          <div style={{
+            fontFamily: "'Poppins', sans-serif",
+            fontSize: '22px',
+            fontWeight: 600,
+            color: 'rgba(255,255,255,0.95)',
+            marginBottom: '8px',
+            lineHeight: 1.4,
+          }}>
+            জরুরি সেবা ব্যবস্থা
+          </div>
+
+          <div style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '13px',
+            fontWeight: 400,
+            color: 'rgba(255,255,255,0.6)',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            marginBottom: '48px',
+          }}>
+            National Emergency Dispatch
+          </div>
+
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: '60px' }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            style={{
+              height: '2px',
+              background: 'rgba(255,255,255,0.3)',
+              margin: '0 auto 48px',
+            }}
+          />
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 2 }}
+          transition={{ duration: 1, delay: 1.2 }}
           style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(180deg, rgba(4,47,29,0.5) 0%, rgba(4,47,29,0.3) 40%, rgba(4,47,29,0.7) 100%)',
-            backdropFilter: 'blur(2px)'
-          }}
-        />
-      </div>
-
-      {/* Floating particles (sparks/embers) */}
-      {[...Array(12)].map((_, i) => (
-        <motion.div
-          key={i}
-          initial={{ y: 0, opacity: 0, scale: Math.random() * 0.5 + 0.5 }}
-          animate={{ 
-            y: [-20, -100, -200], 
-            x: [0, Math.random() * 50 - 25, Math.random() * 50 - 25],
-            opacity: [0, 0.8, 0] 
-          }}
-          transition={{ 
-            duration: 4 + Math.random() * 4, 
-            repeat: Infinity, 
-            delay: Math.random() * 5,
-            ease: "easeInOut"
-          }}
-          style={{
-            position: 'absolute', width: '4px', height: '4px', borderRadius: '50%',
-            background: i % 3 === 0 ? '#10b981' : '#fbbf24', // Mix of green and amber sparks
-            left: `${10 + Math.random() * 80}%`, bottom: `${10 + Math.random() * 40}%`,
-            zIndex: 1, boxShadow: `0 0 10px ${i % 3 === 0 ? '#10b981' : '#fbbf24'}`
-          }}
-        />
-      ))}
-
-      {/* ── Main Card ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 70, scale: 0.9, rotateX: 15 }}
-        animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
-        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-        style={{ 
-          position: 'relative', zIndex: 2, width: '100%', maxWidth: '560px', perspective: '1000px',
-          rotateX: rotateXV, rotateY: rotateYV, transformStyle: 'preserve-3d'
-        }}
-      >
-        {/* Subtle dynamic highlight matching the accent color to give depth */}
-        <motion.div 
-          style={{
-            position: 'absolute', inset: -2, borderRadius: '18px', zIndex: -1,
-            background: `radial-gradient(circle at 50% 0%, ${accent}40 0%, transparent 60%)`,
-            filter: 'blur(15px)',
-            opacity: 0.8
-          }}
-        />
-
-        {/* Back button */}
-        <motion.button
-          onClick={() => navigate('/')}
-          whileHover={{ x: -5 }}
-          style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            background: 'none', border: 'none', color: '#e9d5ff',
-            fontFamily: "'Orbitron', monospace", fontSize: '11px', letterSpacing: '3px',
-            cursor: 'pointer', marginBottom: '28px', textTransform: 'uppercase',
-            textShadow: '0 2px 8px rgba(0,0,0,0.6)',
+            position: 'absolute',
+            bottom: '48px',
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+            zIndex: 2,
           }}
         >
-          <ArrowLeft size={16} /> Back to DAKO
-        </motion.button>
-
-        {/* ── Role Tabs: User / Responder / Admin ── */}
-        <div style={{ display: 'flex', position: 'relative', zIndex: 3 }}>
-          {[
-            { key: 'USER', label: 'Citizen', icon: User, color: '#10b981' },
-            { key: 'RESPONDER', label: 'Responder', icon: Siren, color: '#e11d48' },
-            { key: 'ADMIN', label: 'Admin', icon: UserCog, color: '#f59e0b' },
-          ].map((tab) => {
-            const active = activeRole === tab.key;
-            const TabIcon = tab.icon;
-            return (
-              <motion.button
-                key={tab.key}
-                onClick={() => setActiveRole(tab.key)}
-                whileHover={!active ? { y: -2 } : {}}
-                style={{
-                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  gap: '8px', padding: '13px 16px',
-                  background: active ? 'rgba(4, 30, 20, 0.4)' : 'rgba(4, 30, 20, 0.2)',
-                  border: `1px solid ${active ? tab.color + '50' : 'rgba(255,255,255,0.06)'}`,
-                  borderBottom: active ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: '14px 14px 0 0',
-                  color: active ? tab.color : '#a7f3d0',
-                  fontFamily: "'Orbitron', monospace", fontSize: '11px', fontWeight: 800,
-                  letterSpacing: '1.5px', cursor: 'pointer', textTransform: 'uppercase',
-                  transition: 'all 0.3s ease', position: 'relative', backdropFilter: 'blur(8px)',
-                }}
-              >
-                {active && (
-                  <motion.div
-                    layoutId="activeTabGlow"
-                    transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
-                    style={{
-                      position: 'absolute', top: 0, left: '10%', right: '10%', height: '2px',
-                      background: `linear-gradient(90deg, transparent, ${tab.color}, transparent)`,
-                      boxShadow: `0 0 20px ${tab.color}80`,
-                    }}
-                  />
-                )}
-                <TabIcon size={15} /> {tab.label}
-              </motion.button>
-            );
-          })}
-        </div>
-
-        {/* ── Code Editor Window ── */}
-        <div style={{
-          background: 'rgba(4, 30, 20, 0.4)', backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255,255,255,0.08)', borderTop: 'none',
-          borderRadius: '0 0 18px 18px', overflow: 'hidden',
-          boxShadow: `0 30px 60px rgba(0,0,0,0.7), 0 0 80px ${accent}08`,
-        }}>
-
-          {/* Terminal title bar */}
           <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '13px 22px', background: 'rgba(0,0,0,0.3)',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            fontFamily: "'Poppins', sans-serif",
+            fontSize: '14px',
+            color: 'rgba(255,255,255,0.5)',
+            fontWeight: 400,
+            lineHeight: 1.6,
           }}>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              {['#ff5f56', '#ffbd2e', '#27c93f'].map((c, i) => (
-                <motion.div
-                  key={i} whileHover={{ scale: 1.3 }}
-                  style={{ width: '11px', height: '11px', borderRadius: '50%', background: c, boxShadow: `0 0 8px ${c}60` }}
-                />
-              ))}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Terminal size={13} color="#64748b" />
-              <span style={{ fontFamily: "'Orbitron', monospace", fontSize: '10px', color: '#94a3b8', letterSpacing: '1px' }}>
-                {activeRole === 'USER' ? 'citizen' : activeRole === 'RESPONDER' ? 'responder' : 'admin'}_auth.dako
-              </span>
-            </div>
-            <Sparkles size={13} color="#64748b" />
+            সারাদেশে জীবন রক্ষায় নিবেদিত
+          </div>
+        </motion.div>
+      </div>
+
+      {/* ── Right Form Panel ── */}
+      <div style={{
+        flex: 1,
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '40px 24px',
+        overflowY: 'auto',
+        background: '#0C1219',
+      }}>
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          style={{ width: '100%', maxWidth: '480px' }}
+        >
+          {/* Back button */}
+          <motion.button
+            onClick={() => navigate('/')}
+            whileHover={{ x: -4 }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: 'none',
+              border: 'none',
+              color: '#8899AA',
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '13px',
+              cursor: 'pointer',
+              marginBottom: '32px',
+              padding: 0,
+            }}
+          >
+            <ArrowLeft size={16} /> Back to Home
+          </motion.button>
+
+          {/* Header */}
+          <div style={{ marginBottom: '28px' }}>
+            <h1 style={{
+              fontFamily: "'Poppins', sans-serif",
+              fontSize: '26px',
+              fontWeight: 700,
+              color: '#E8EDF2',
+              margin: '0 0 6px',
+            }}>
+              {isLogin ? 'Welcome Back' : 'Create Account'}
+            </h1>
+            <p style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '14px',
+              color: '#5A6A7A',
+              margin: 0,
+            }}>
+              {isLogin
+                ? 'Sign in to access the emergency dispatch system'
+                : `Register as a new ${activeRole === 'USER' ? 'citizen' : activeRole === 'RESPONDER' ? 'responder' : 'admin'}`
+              }
+            </p>
           </div>
 
-          {/* Login / Register toggle */}
+          {/* ── Role Tabs ── */}
           <div style={{
-            display: 'flex', margin: '20px 24px 8px', borderRadius: '10px',
-            background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', padding: '3px',
+            display: 'flex',
+            gap: '8px',
+            marginBottom: '20px',
           }}>
             {[
-              { mode: true, label: 'Authenticate', icon: LogIn },
-              { mode: false, label: 'Enroll', icon: UserPlus },
+              { key: 'USER', label: 'Citizen', icon: User, color: '#006A4E' },
+              { key: 'RESPONDER', label: 'Responder', icon: Siren, color: '#F42A41' },
+              { key: 'ADMIN', label: 'Admin', icon: UserCog, color: '#D4A853' },
+            ].map((tab) => {
+              const active = activeRole === tab.key;
+              const TabIcon = tab.icon;
+              return (
+                <motion.button
+                  key={tab.key}
+                  onClick={() => setActiveRole(tab.key)}
+                  whileHover={!active ? { y: -1 } : {}}
+                  whileTap={{ scale: 0.97 }}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    padding: '10px 12px',
+                    background: active ? `${tab.color}18` : 'rgba(17, 29, 43, 0.88)',
+                    border: `1.5px solid ${active ? tab.color : 'rgba(0, 106, 78, 0.15)'}`,
+                    borderRadius: '10px',
+                    color: active ? tab.color : '#8899AA',
+                    fontFamily: "'Poppins', sans-serif",
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.25s ease',
+                    position: 'relative',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {active && (
+                    <motion.div
+                      layoutId="activeRoleIndicator"
+                      transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }}
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: '20%',
+                        right: '20%',
+                        height: '2px',
+                        background: tab.color,
+                        borderRadius: '2px 2px 0 0',
+                      }}
+                    />
+                  )}
+                  <TabIcon size={14} /> {tab.label}
+                </motion.button>
+              );
+            })}
+          </div>
+
+          {/* ── Login / Register Toggle ── */}
+          <div style={{
+            display: 'flex',
+            borderRadius: '10px',
+            background: 'rgba(17, 29, 43, 0.88)',
+            border: '1px solid rgba(0, 106, 78, 0.15)',
+            padding: '3px',
+            marginBottom: '24px',
+          }}>
+            {[
+              { mode: true, label: 'Login', icon: LogIn },
+              { mode: false, label: 'Register', icon: UserPlus },
             ].map((item) => {
               const active = isLogin === item.mode;
               const ItemIcon = item.icon;
@@ -364,284 +415,414 @@ export default function AuthPage() {
                   onClick={() => setIsLogin(item.mode)}
                   whileTap={{ scale: 0.97 }}
                   style={{
-                    flex: 1, padding: '11px', display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', gap: '8px',
-                    background: active ? `${accent}18` : 'transparent',
-                    border: 'none', borderRadius: '8px',
-                    color: active ? accent : '#64748b',
-                    fontFamily: "'Orbitron', monospace", fontSize: '10px', fontWeight: 700,
-                    letterSpacing: '2px', cursor: 'pointer', textTransform: 'uppercase',
+                    flex: 1,
+                    padding: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    background: active ? '#006A4E20' : 'transparent',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: active ? '#00896A' : '#5A6A7A',
+                    fontFamily: "'Poppins', sans-serif",
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
                     transition: 'all 0.25s ease',
                   }}
                 >
-                  <ItemIcon size={13} /> {item.label}
+                  <ItemIcon size={14} /> {item.label}
                 </motion.button>
               );
             })}
           </div>
 
-          {/* Form area with line number gutter */}
-          <div style={{ display: 'flex', padding: '14px 0 28px' }}>
+          {/* ── Form Card ── */}
+          <div style={{
+            background: 'rgba(17, 29, 43, 0.88)',
+            border: '1px solid rgba(0, 106, 78, 0.15)',
+            borderRadius: '16px',
+            padding: '28px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+          }}>
+            <AnimatePresence mode="wait">
+              {isLogin ? (
+                <motion.form
+                  key={`login-${activeRole}`}
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="show"
+                  exit="exit"
+                  onSubmit={handleLogin}
+                >
+                  <motion.div variants={itemVariants}>
+                    <FormField
+                      icon={Phone}
+                      label="Phone Number"
+                      placeholder="Enter mobile number"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      required
+                    />
+                  </motion.div>
 
-            {/* Line numbers */}
-            <div style={{
-              padding: '0 14px 0 22px', borderRight: '1px solid rgba(255,255,255,0.05)',
-              display: 'flex', flexDirection: 'column', userSelect: 'none',
-            }}>
-              {Array.from({ length: lineCount }, (_, i) => (
-                <div key={i} style={{
-                  fontFamily: 'monospace', fontSize: '13px', color: '#4c1d95',
-                  height: '54px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
-                }}>
-                  {i + 1}
-                </div>
-              ))}
-            </div>
+                  <motion.div variants={itemVariants}>
+                    <FormField
+                      icon={Lock}
+                      label="Password"
+                      placeholder="••••••••"
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      suffix={<PwdToggle show={showPassword} toggle={() => setShowPassword(!showPassword)} />}
+                    />
+                  </motion.div>
 
-            {/* Form fields */}
-            <div style={{ flex: 1, padding: '0 24px 0 18px', overflow: 'hidden' }}>
-              <AnimatePresence mode="wait">
-                {isLogin ? (
-                  <motion.form
-                    key={`login-${activeRole}`}
-                    variants={containerVariants} initial="hidden" animate="show" exit="exit"
-                    onSubmit={handleLogin}
-                  >
-                    <motion.div variants={itemVariants} style={commentStyle}>
-                      <span style={{ color: '#f472b6' }}>#</span>
-                      {`Initialize ${activeRole === 'USER' ? 'citizen' : activeRole === 'RESPONDER' ? 'responder' : 'admin'} session`}
-                    </motion.div>
+                  <motion.div variants={itemVariants} style={{ marginTop: '8px' }}>
+                    <SubmitButton loading={loading} label="Sign In" icon={ArrowRight} />
+                  </motion.div>
+                </motion.form>
+              ) : (
+                <motion.form
+                  key={`register-${activeRole}`}
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="show"
+                  exit="exit"
+                  onSubmit={handleRegister}
+                >
+                  <motion.div variants={itemVariants}>
+                    <FormField
+                      icon={User}
+                      label="Full Name"
+                      placeholder="Enter your full name"
+                      name="fullName"
+                      onChange={handleChange}
+                      required
+                    />
+                  </motion.div>
 
-                    <motion.div variants={itemVariants}>
-                      <FieldRow icon={Phone} label="phone" placeholder="Enter mobile number"
-                        value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} accent={accent} required />
-                    </motion.div>
+                  <motion.div variants={itemVariants}>
+                    <FormField
+                      icon={IdCard}
+                      label="National ID"
+                      placeholder="Enter NID number"
+                      name="nid"
+                      onChange={handleChange}
+                      required
+                    />
+                  </motion.div>
 
-                    <motion.div variants={itemVariants}>
-                      <FieldRow icon={Lock} label="passcode" placeholder="••••••••"
-                        type={showPassword ? 'text' : 'password'} value={password}
-                        onChange={(e) => setPassword(e.target.value)} accent={accent} required
-                        suffix={<PwdToggle show={showPassword} toggle={() => setShowPassword(!showPassword)} />} />
-                    </motion.div>
+                  <motion.div variants={itemVariants}>
+                    <FormField
+                      icon={Phone}
+                      label="Phone Number"
+                      placeholder="Enter mobile number"
+                      name="phoneNumber"
+                      onChange={handleChange}
+                      required
+                    />
+                  </motion.div>
 
-                    <motion.div variants={itemVariants} style={commentStyle}>
-                      <span style={{ color: '#f472b6' }}>#</span> Execute handshake
-                    </motion.div>
+                  <motion.div variants={itemVariants}>
+                    <FormField
+                      icon={Lock}
+                      label="Password"
+                      placeholder="Create a password"
+                      name="password"
+                      type={showPassword ? 'text' : 'password'}
+                      onChange={handleChange}
+                      required
+                      suffix={<PwdToggle show={showPassword} toggle={() => setShowPassword(!showPassword)} />}
+                    />
+                  </motion.div>
 
-                    <motion.div variants={itemVariants}>
-                      <ActionButton loading={loading} label="Authenticate" icon={ArrowRight} color={accent} />
-                    </motion.div>
-
-                    <motion.div variants={itemVariants} style={{ ...commentStyle, marginTop: '2px' }}>
-                      <span style={{ color: '#c084fc' }}>return</span>
-                      <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 2.5, repeat: Infinity }}
-                        style={{ color: accent }}>access_granted</motion.span>
-                    </motion.div>
-                  </motion.form>
-                ) : (
-                  <motion.form
-                    key={`register-${activeRole}`}
-                    variants={containerVariants} initial="hidden" animate="show" exit="exit"
-                    onSubmit={handleRegister}
-                  >
-                    <motion.div variants={itemVariants} style={commentStyle}>
-                      <span style={{ color: '#f472b6' }}>#</span>
-                      {`Create new ${activeRole === 'USER' ? 'citizen' : activeRole === 'RESPONDER' ? 'responder' : 'admin'} record`}
-                    </motion.div>
-
-                    <motion.div variants={itemVariants}>
-                      <FieldRow icon={User} label="name" placeholder="Full name" name="fullName" onChange={handleChange} accent={accent} required />
-                    </motion.div>
-
-                    <motion.div variants={itemVariants}>
-                      <FieldRow icon={IdCard} label="nid" placeholder="National ID" name="nid" onChange={handleChange} accent={accent} required />
-                    </motion.div>
-
-                    <motion.div variants={itemVariants}>
-                      <FieldRow icon={Phone} label="phone" placeholder="Mobile number" name="phoneNumber" onChange={handleChange} accent={accent} required />
-                    </motion.div>
-
-                    <motion.div variants={itemVariants}>
-                      <FieldRow icon={Lock} label="passcode" placeholder="Create passcode" name="password"
-                        type={showPassword ? 'text' : 'password'} onChange={handleChange} accent={accent} required
-                        suffix={<PwdToggle show={showPassword} toggle={() => setShowPassword(!showPassword)} />} />
-                    </motion.div>
-
-                    {/* Responder-specific fields */}
-                    {activeRole === 'RESPONDER' && (
-                      <>
-                        <motion.div variants={itemVariants} style={commentStyle}>
-                          <span style={{ color: '#f472b6' }}>#</span> Select service type
-                        </motion.div>
-                        <motion.div variants={itemVariants}>
-                          <div style={{ height: '54px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  {activeRole === 'RESPONDER' && (
+                    <>
+                      <motion.div variants={itemVariants}>
+                        <div style={{ marginBottom: '18px' }}>
+                          <label style={{
+                            display: 'block',
+                            fontFamily: "'Inter', sans-serif",
+                            fontSize: '12px',
+                            fontWeight: 500,
+                            color: '#8899AA',
+                            marginBottom: '8px',
+                            letterSpacing: '0.3px',
+                          }}>
+                            Service Type
+                          </label>
+                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                             {SERVICE_TYPES.map(st => {
                               const active = formData.serviceType === st.key;
                               const StIcon = st.icon;
                               return (
                                 <motion.button
-                                  key={st.key} type="button"
-                                  whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                                  key={st.key}
+                                  type="button"
+                                  whileHover={{ scale: 1.03 }}
+                                  whileTap={{ scale: 0.97 }}
                                   onClick={() => setFormData({ ...formData, serviceType: st.key })}
                                   style={{
-                                    padding: '6px 12px', borderRadius: '8px', cursor: 'pointer',
-                                    background: active ? `${st.color}25` : 'transparent',
-                                    border: `1px solid ${active ? st.color : 'rgba(255,255,255,0.1)'}`,
-                                    color: active ? st.color : '#64748b',
-                                    fontSize: '10px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px',
-                                    fontFamily: "'Orbitron', monospace",
+                                    padding: '8px 14px',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    background: active ? `${st.color}20` : 'rgba(12, 18, 25, 0.6)',
+                                    border: `1.5px solid ${active ? st.color : 'rgba(0, 106, 78, 0.15)'}`,
+                                    color: active ? st.color : '#8899AA',
+                                    fontSize: '11px',
+                                    fontWeight: 600,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                    fontFamily: "'Inter', sans-serif",
+                                    transition: 'all 0.2s ease',
                                   }}
                                 >
-                                  <StIcon size={12} /> {st.label}
+                                  <StIcon size={13} /> {st.label}
                                 </motion.button>
                               );
                             })}
                           </div>
-                        </motion.div>
-                        <motion.div variants={itemVariants}>
-                          <FieldRow icon={Car} label="vehicle" placeholder="Vehicle reg. number (optional)" name="vehicleRegistrationNumber" onChange={handleChange} accent={accent} />
-                        </motion.div>
-                      </>
-                    )}
-
-                    {/* Citizen-specific fields */}
-                    {activeRole === 'USER' && (
-                      <>
-                        <motion.div variants={itemVariants}>
-                          <FieldRow icon={MapPin} label="address" placeholder="Home address" name="homeAddress" onChange={handleChange} accent={accent} required />
-                        </motion.div>
-                        <motion.div variants={itemVariants}>
-                          <FieldRow icon={Contact} label="emergency" placeholder="Emergency contact" name="emergencyContactNumber" onChange={handleChange} accent={accent} />
-                        </motion.div>
-                      </>
-                    )}
-
-                    {/* Admin fields */}
-                    {activeRole === 'ADMIN' && (
-                      <motion.div variants={itemVariants}>
-                        <FieldRow icon={MapPin} label="address" placeholder="Admin HQ" name="homeAddress" onChange={handleChange} accent={accent} />
+                        </div>
                       </motion.div>
-                    )}
 
-                    <motion.div variants={itemVariants} style={commentStyle}>
-                      <span style={{ color: '#f472b6' }}>#</span> Commit to database
-                    </motion.div>
+                      <motion.div variants={itemVariants}>
+                        <FormField
+                          icon={Car}
+                          label="Vehicle Registration"
+                          placeholder="Vehicle reg. number (optional)"
+                          name="vehicleRegistrationNumber"
+                          onChange={handleChange}
+                        />
+                      </motion.div>
+                    </>
+                  )}
 
+                  {activeRole === 'USER' && (
+                    <>
+                      <motion.div variants={itemVariants}>
+                        <FormField
+                          icon={MapPin}
+                          label="Home Address"
+                          placeholder="Enter your home address"
+                          name="homeAddress"
+                          onChange={handleChange}
+                          required
+                        />
+                      </motion.div>
+                      <motion.div variants={itemVariants}>
+                        <FormField
+                          icon={Contact}
+                          label="Emergency Contact"
+                          placeholder="Emergency contact number"
+                          name="emergencyContactNumber"
+                          onChange={handleChange}
+                        />
+                      </motion.div>
+                    </>
+                  )}
+
+                  {activeRole === 'ADMIN' && (
                     <motion.div variants={itemVariants}>
-                      <ActionButton loading={loading} label="Confirm Enrollment" icon={UserPlus} color={accent} />
+                      <FormField
+                        icon={MapPin}
+                        label="Office Address"
+                        placeholder="Admin headquarters address"
+                        name="homeAddress"
+                        onChange={handleChange}
+                      />
                     </motion.div>
-                  </motion.form>
-                )}
-              </AnimatePresence>
-            </div>
+                  )}
+
+                  <motion.div variants={itemVariants} style={{ marginTop: '8px' }}>
+                    <SubmitButton loading={loading} label="Create Account" icon={UserPlus} />
+                  </motion.div>
+                </motion.form>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Footer */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '11px 22px', background: 'rgba(0,0,0,0.4)',
-            borderTop: '1px solid rgba(255,255,255,0.05)',
-          }}>
-            <span style={{ fontSize: '10px', color: '#4c1d95', fontFamily: 'monospace' }}>
-              DAKO v3.0 — <span style={{ color: '#27c93f' }}>Online</span>
+          {/* Footer toggle */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            style={{
+              textAlign: 'center',
+              marginTop: '20px',
+            }}
+          >
+            <span style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '13px',
+              color: '#5A6A7A',
+            }}>
+              {isLogin ? "Don't have an account? " : 'Already have an account? '}
+              <motion.button
+                onClick={() => setIsLogin(!isLogin)}
+                whileHover={{ color: '#00896A' }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#006A4E',
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  padding: 0,
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '3px',
+                }}
+              >
+                {isLogin ? 'Register' : 'Sign In'}
+              </motion.button>
             </span>
-            <span style={{ fontSize: '10px', color: '#4c1d95', fontFamily: 'monospace', letterSpacing: '1px' }}>
-              {activeRole}_MODE
-            </span>
-          </div>
-        </div>
-      </motion.div>
+          </motion.div>
+
+        </motion.div>
+      </div>
+
+      {/* Responsive: hide left panel on mobile */}
+      <style>{`
+        @media (max-width: 900px) {
+          .auth-left-panel {
+            display: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
 
-/* ── Password toggle button ── */
-const PwdToggle = ({ show, toggle }) => (
-  <motion.button
-    type="button" onClick={toggle} whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.9 }}
-    style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: '4px', display: 'flex' }}
-  >
-    {show ? <EyeOff size={15} /> : <Eye size={15} />}
-  </motion.button>
-);
+function PwdToggle({ show, toggle }) {
+  return (
+    <motion.button
+      type="button"
+      onClick={toggle}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      style={{
+        background: 'none',
+        border: 'none',
+        color: '#5A6A7A',
+        cursor: 'pointer',
+        padding: '4px',
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      {show ? <EyeOff size={16} /> : <Eye size={16} />}
+    </motion.button>
+  );
+}
 
-/* ── Code-editor style field row ── */
-function FieldRow({ icon: Icon, label, placeholder, type = 'text', value, onChange, name, accent, required, suffix }) {
+function FormField({ icon: Icon, label, placeholder, type = 'text', value, onChange, name, required, suffix }) {
   const [focused, setFocused] = useState(false);
 
   return (
-    <div style={{ height: '54px', display: 'flex', alignItems: 'center' }}>
-      <span style={{ fontFamily: 'monospace', fontSize: '13px', color: '#c084fc', whiteSpace: 'nowrap', marginRight: '6px' }}>
+    <div style={{ marginBottom: '18px' }}>
+      <label style={{
+        display: 'block',
+        fontFamily: "'Inter', sans-serif",
+        fontSize: '12px',
+        fontWeight: 500,
+        color: '#8899AA',
+        marginBottom: '6px',
+        letterSpacing: '0.3px',
+      }}>
         {label}
-      </span>
-      <span style={{ fontFamily: 'monospace', fontSize: '13px', color: '#64748b', margin: '0 6px' }}>=</span>
-      <span style={{ fontFamily: 'monospace', fontSize: '13px', color: '#4ade80', marginRight: '4px' }}>"</span>
-
-      <motion.div
-        animate={focused ? { background: 'rgba(167,139,250,0.06)' } : { background: 'transparent' }}
-        style={{
-          flex: 1, display: 'flex', alignItems: 'center', borderRadius: '6px',
-          padding: '0 8px', transition: 'background 0.3s',
-        }}
-      >
-        <Icon size={14} color={focused ? accent : '#64748b'} style={{ marginRight: '8px', flexShrink: 0, transition: 'color 0.3s' }} />
+      </label>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        background: focused ? 'rgba(0, 106, 78, 0.06)' : 'rgba(12, 18, 25, 0.6)',
+        border: `1.5px solid ${focused ? '#006A4E' : 'rgba(0, 106, 78, 0.15)'}`,
+        borderRadius: '10px',
+        padding: '0 14px',
+        transition: 'all 0.25s ease',
+        boxShadow: focused ? '0 0 0 3px rgba(0, 106, 78, 0.1)' : 'none',
+      }}>
+        <Icon
+          size={16}
+          color={focused ? '#006A4E' : '#5A6A7A'}
+          style={{ marginRight: '10px', flexShrink: 0, transition: 'color 0.25s' }}
+        />
         <input
-          type={type} name={name} placeholder={placeholder} value={value} onChange={onChange} required={required}
-          onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
+          type={type}
+          name={name}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          required={required}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           style={{
-            flex: 1, padding: '9px 0', background: 'transparent', border: 'none',
-            borderBottom: `1px solid ${focused ? accent : 'rgba(255,255,255,0.08)'}`,
-            color: '#f1f5f9', fontSize: '13px', fontFamily: "'Inter', sans-serif",
-            outline: 'none', transition: 'border-color 0.3s', minWidth: 0,
+            flex: 1,
+            padding: '12px 0',
+            background: 'transparent',
+            border: 'none',
+            color: '#E8EDF2',
+            fontSize: '14px',
+            fontFamily: "'Inter', sans-serif",
+            outline: 'none',
+            minWidth: 0,
           }}
         />
         {suffix}
-      </motion.div>
-
-      <span style={{ fontFamily: 'monospace', fontSize: '13px', color: '#4ade80', marginLeft: '4px' }}>"</span>
+      </div>
     </div>
   );
 }
 
-/* ── Animated submit button ── */
-function ActionButton({ loading, label, icon: Icon, color }) {
+function SubmitButton({ loading, label, icon: Icon }) {
   return (
-    <div style={{ height: '54px', display: 'flex', alignItems: 'center' }}>
-      <motion.button
-        type="submit" disabled={loading}
-        whileHover={{ boxShadow: `0 0 30px ${color}50, 0 0 60px ${color}20`, y: -2 }}
-        whileTap={{ scale: 0.97 }}
-        style={{
-          width: '100%', padding: '13px 20px', borderRadius: '10px',
-          border: `1px solid ${color}50`,
-          background: `linear-gradient(135deg, ${color}25, ${color}08)`,
-          color: color, fontFamily: "'Orbitron', monospace", fontSize: '12px',
-          fontWeight: 800, letterSpacing: '3px', textTransform: 'uppercase',
-          cursor: loading ? 'not-allowed' : 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-          transition: 'all 0.3s ease', opacity: loading ? 0.5 : 1,
-          boxShadow: `0 0 15px ${color}15`,
-        }}
-      >
-        {loading ? (
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
-            <Loader size={17} />
+    <motion.button
+      type="submit"
+      disabled={loading}
+      whileHover={{ boxShadow: '0 4px 20px rgba(0, 106, 78, 0.3)', y: -1 }}
+      whileTap={{ scale: 0.98 }}
+      style={{
+        width: '100%',
+        padding: '14px 20px',
+        borderRadius: '10px',
+        border: 'none',
+        background: 'linear-gradient(135deg, #006A4E, #00896A)',
+        color: '#FFFFFF',
+        fontFamily: "'Poppins', sans-serif",
+        fontSize: '14px',
+        fontWeight: 600,
+        letterSpacing: '0.5px',
+        cursor: loading ? 'not-allowed' : 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '10px',
+        transition: 'all 0.3s ease',
+        opacity: loading ? 0.6 : 1,
+        boxShadow: '0 2px 12px rgba(0, 106, 78, 0.2)',
+      }}
+    >
+      {loading ? (
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+        >
+          <Loader size={18} />
+        </motion.div>
+      ) : (
+        <>
+          <span>{label}</span>
+          <motion.div
+            animate={{ x: [0, 4, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            <Icon size={16} />
           </motion.div>
-        ) : (
-          <>
-            <span>{label}</span>
-            <motion.div animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-              <Icon size={16} />
-            </motion.div>
-          </>
-        )}
-      </motion.button>
-    </div>
+        </>
+      )}
+    </motion.button>
   );
 }
-
-/* ── Comment line styling ── */
-const commentStyle = {
-  fontFamily: 'monospace', fontSize: '13px', color: '#64748b',
-  height: '54px', display: 'flex', alignItems: 'center', fontStyle: 'italic', gap: '6px',
-};

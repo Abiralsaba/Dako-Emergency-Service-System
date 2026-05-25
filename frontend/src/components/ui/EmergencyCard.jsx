@@ -69,7 +69,7 @@ export default function EmergencyCard({ emergency, onClick, showDetails }) {
               </div>
             )}
             {emergency.responderName && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#00f0ff' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#006A4E' }}>
                 → {emergency.responderName}
               </div>
             )}

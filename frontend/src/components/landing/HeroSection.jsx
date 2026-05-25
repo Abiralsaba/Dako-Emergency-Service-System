@@ -1,16 +1,13 @@
 /*
-  =========================================
-  HERO SECTION (SCENE 1)
-  =========================================
-  The initial viewport the user sees upon loading.
-  Displays the main DAKO branding and Login/Register entry points.
-  Parallax animations are synced to master scroll.
+  Hero Section — First viewport of the landing page.
+  Shows DAKO branding with Bangladeshi identity,
+  Bengali subtitle, and Login/Register entry points.
 */
 import React from 'react';
 import { motion, useTransform } from 'framer-motion';
 import { ChevronDown, LogIn, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import heroImg from '../../assets/ChatGPT Image Apr 11, 2026, 07_42_14 PM.png';
+import heroImg from '../../assets/bangladesh-hero.png';
 
 
 export default function HeroSection({ scrollYProgress }) {
@@ -34,7 +31,7 @@ export default function HeroSection({ scrollYProgress }) {
         justifyContent: 'center',
       }}
     >
-      {/* Background image — zooms on scroll */}
+      {/* Background image — Dhaka cityscape, zooms on scroll */}
       <motion.div
         style={{
           position: 'absolute',
@@ -45,7 +42,7 @@ export default function HeroSection({ scrollYProgress }) {
       >
         <img
           src={heroImg}
-          alt="Spaceship cockpit looking out at Mars"
+          alt="Aerial view of Dhaka cityscape with emergency services"
           style={{
             width: '100%',
             height: '100%',
@@ -53,24 +50,24 @@ export default function HeroSection({ scrollYProgress }) {
             objectPosition: 'center',
           }}
         />
-        {/* Dark gradient overlay for text legibility */}
+        {/* Dark gradient overlay for readability */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
             background:
-              'linear-gradient(180deg, rgba(3,7,18,0.5) 0%, rgba(3,7,18,0.2) 40%, rgba(3,7,18,0.6) 100%)',
+              'linear-gradient(180deg, rgba(12,18,25,0.82) 0%, rgba(12,18,25,0.55) 35%, rgba(12,18,25,0.65) 55%, rgba(12,18,25,0.88) 100%)',
           }}
         />
       </motion.div>
 
-      {/* Scanline overlay for cinematic effect */}
+      {/* Subtle geometric pattern overlay (Kantha-inspired) */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
           background:
-            'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,240,255,0.015) 2px, rgba(0,240,255,0.015) 4px)',
+            'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,106,78,0.012) 3px, rgba(0,106,78,0.012) 6px)',
           pointerEvents: 'none',
           zIndex: 2,
         }}
@@ -85,9 +82,12 @@ export default function HeroSection({ scrollYProgress }) {
           y: titleY,
           opacity: titleOpacity,
           pointerEvents: 'auto',
+          background: 'radial-gradient(ellipse at center, rgba(12,18,25,0.6) 0%, transparent 70%)',
+          padding: '40px 60px',
+          borderRadius: '24px',
         }}
       >
-        {/* Horizontal accent line */}
+        {/* Accent line — green to gold */}
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
@@ -95,27 +95,28 @@ export default function HeroSection({ scrollYProgress }) {
           style={{
             width: '80px',
             height: '2px',
-            background: 'linear-gradient(90deg, transparent, #00f0ff, transparent)',
+            background: 'linear-gradient(90deg, transparent, #006A4E, #D4A853, transparent)',
             margin: '0 auto 24px',
             transformOrigin: 'center',
           }}
         />
 
-        {/* Subtitle tag above title */}
+        {/* Bengali subtitle above title */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
           style={{
-            fontFamily: "'Orbitron', monospace",
-            fontSize: '13px',
-            letterSpacing: '6px',
-            color: 'rgba(0,240,255,0.7)',
+            fontFamily: "'Poppins', sans-serif",
+            fontSize: '14px',
+            letterSpacing: '5px',
+            color: '#D4A853',
             textTransform: 'uppercase',
             marginBottom: '16px',
+            textShadow: '0 2px 10px rgba(0,0,0,0.8), 0 0 30px rgba(212,168,83,0.3)',
           }}
         >
-          National Emergency System — Bangladesh
+          জরুরি সেবা ব্যবস্থা — বাংলাদেশ
         </motion.p>
 
         {/* Main DAKO title */}
@@ -124,37 +125,57 @@ export default function HeroSection({ scrollYProgress }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2 }}
           style={{
-            fontFamily: "'Orbitron', monospace",
+            fontFamily: "'Poppins', sans-serif",
             fontSize: 'clamp(64px, 12vw, 140px)',
             fontWeight: 900,
             color: '#ffffff',
             lineHeight: 1,
             letterSpacing: '12px',
             textShadow:
-              '0 0 60px rgba(0,240,255,0.4), 0 0 120px rgba(0,240,255,0.15)',
+              '0 0 60px rgba(0,106,78,0.5), 0 0 120px rgba(0,106,78,0.2), 0 4px 20px rgba(0,0,0,0.9)',
             margin: 0,
           }}
         >
           DAKO
         </motion.h1>
 
-        {/* Tagline */}
+        {/* English subtitle */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
+          transition={{ duration: 0.8, delay: 0.7 }}
           style={{
-            fontSize: '18px',
-            color: 'var(--text-secondary)',
-            marginTop: '20px',
-            fontWeight: 300,
-            letterSpacing: '1px',
+            fontFamily: "'Poppins', sans-serif",
+            fontSize: '16px',
+            fontWeight: 600,
+            letterSpacing: '6px',
+            color: '#00C896',
+            textTransform: 'uppercase',
+            marginTop: '12px',
+            textShadow: '0 2px 10px rgba(0,0,0,0.8), 0 0 20px rgba(0,137,106,0.4)',
           }}
         >
-          Protecting lives across the nation
+          National Emergency Dispatch
         </motion.p>
 
-        {/* Accent line below */}
+        {/* Bengali tagline */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.9 }}
+          style={{
+            fontSize: '17px',
+            color: '#C8D4E0',
+            marginTop: '16px',
+            fontWeight: 400,
+            letterSpacing: '1px',
+            textShadow: '0 2px 8px rgba(0,0,0,0.9)',
+          }}
+        >
+          সারাদেশে জীবন রক্ষায় নিবেদিত — Protecting lives across the nation
+        </motion.p>
+
+        {/* Accent line below — green to gold */}
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
@@ -162,13 +183,13 @@ export default function HeroSection({ scrollYProgress }) {
           style={{
             width: '80px',
             height: '2px',
-            background: 'linear-gradient(90deg, transparent, #00f0ff, transparent)',
+            background: 'linear-gradient(90deg, transparent, #D4A853, #006A4E, transparent)',
             margin: '28px auto 0',
             transformOrigin: 'center',
           }}
         />
 
-        {/* ── User Login & Register Buttons ── */}
+        {/* Login & Register Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -181,11 +202,11 @@ export default function HeroSection({ scrollYProgress }) {
             flexWrap: 'wrap',
           }}
         >
-          {/* Login Button */}
+          {/* Login Button — Bangladesh Green */}
           <motion.button
             whileHover={{
               scale: 1.05,
-              boxShadow: '0 0 35px rgba(0,240,255,0.5), 0 0 80px rgba(0,240,255,0.15)',
+              boxShadow: '0 0 35px rgba(0,106,78,0.5), 0 0 80px rgba(0,106,78,0.15)',
             }}
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate('/auth?mode=login')}
@@ -195,17 +216,17 @@ export default function HeroSection({ scrollYProgress }) {
               gap: '12px',
               padding: '16px 36px',
               borderRadius: '14px',
-              background: 'linear-gradient(135deg, rgba(0,240,255,0.15), rgba(0,240,255,0.05))',
-              border: '1px solid rgba(0,240,255,0.35)',
-              color: '#00f0ff',
-              fontFamily: "'Orbitron', monospace",
+              background: 'linear-gradient(135deg, rgba(0,106,78,0.2), rgba(0,106,78,0.08))',
+              border: '1px solid rgba(0,106,78,0.4)',
+              color: '#00896A',
+              fontFamily: "'Poppins', sans-serif",
               fontSize: '14px',
               fontWeight: 700,
               letterSpacing: '3px',
               textTransform: 'uppercase',
               cursor: 'pointer',
               backdropFilter: 'blur(20px)',
-              boxShadow: '0 0 20px rgba(0,240,255,0.15), inset 0 1px 0 rgba(255,255,255,0.06)',
+              boxShadow: '0 0 20px rgba(0,106,78,0.15), inset 0 1px 0 rgba(255,255,255,0.06)',
               transition: 'all 0.3s ease',
               position: 'relative',
               overflow: 'hidden',
@@ -221,7 +242,7 @@ export default function HeroSection({ scrollYProgress }) {
                 left: 0,
                 width: '40%',
                 height: '100%',
-                background: 'linear-gradient(90deg, transparent, rgba(0,240,255,0.1), transparent)',
+                background: 'linear-gradient(90deg, transparent, rgba(0,106,78,0.12), transparent)',
                 pointerEvents: 'none',
               }}
             />
@@ -229,11 +250,11 @@ export default function HeroSection({ scrollYProgress }) {
             <span>Login</span>
           </motion.button>
 
-          {/* Register Button */}
+          {/* Register Button — Flag Red */}
           <motion.button
             whileHover={{
               scale: 1.05,
-              boxShadow: '0 0 35px rgba(16,185,129,0.5), 0 0 80px rgba(16,185,129,0.15)',
+              boxShadow: '0 0 35px rgba(244,42,65,0.4), 0 0 80px rgba(244,42,65,0.12)',
             }}
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate('/auth?mode=register')}
@@ -243,17 +264,17 @@ export default function HeroSection({ scrollYProgress }) {
               gap: '12px',
               padding: '16px 36px',
               borderRadius: '14px',
-              background: 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05))',
-              border: '1px solid rgba(16,185,129,0.35)',
-              color: '#10b981',
-              fontFamily: "'Orbitron', monospace",
+              background: 'linear-gradient(135deg, rgba(244,42,65,0.15), rgba(244,42,65,0.05))',
+              border: '1px solid rgba(244,42,65,0.35)',
+              color: '#F42A41',
+              fontFamily: "'Poppins', sans-serif",
               fontSize: '14px',
               fontWeight: 700,
               letterSpacing: '3px',
               textTransform: 'uppercase',
               cursor: 'pointer',
               backdropFilter: 'blur(20px)',
-              boxShadow: '0 0 20px rgba(16,185,129,0.15), inset 0 1px 0 rgba(255,255,255,0.06)',
+              boxShadow: '0 0 20px rgba(244,42,65,0.12), inset 0 1px 0 rgba(255,255,255,0.06)',
               transition: 'all 0.3s ease',
               position: 'relative',
               overflow: 'hidden',
@@ -269,7 +290,7 @@ export default function HeroSection({ scrollYProgress }) {
                 left: 0,
                 width: '40%',
                 height: '100%',
-                background: 'linear-gradient(90deg, transparent, rgba(16,185,129,0.1), transparent)',
+                background: 'linear-gradient(90deg, transparent, rgba(244,42,65,0.1), transparent)',
                 pointerEvents: 'none',
               }}
             />
@@ -298,10 +319,10 @@ export default function HeroSection({ scrollYProgress }) {
       >
         <span
           style={{
-            fontFamily: "'Orbitron', monospace",
+            fontFamily: "'Poppins', sans-serif",
             fontSize: '10px',
             letterSpacing: '4px',
-            color: 'rgba(0,240,255,0.5)',
+            color: 'rgba(0,106,78,0.6)',
             textTransform: 'uppercase',
           }}
         >
@@ -311,7 +332,7 @@ export default function HeroSection({ scrollYProgress }) {
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <ChevronDown size={20} color="rgba(0,240,255,0.5)" />
+          <ChevronDown size={20} color="rgba(0,106,78,0.6)" />
         </motion.div>
       </motion.div>
     </section>

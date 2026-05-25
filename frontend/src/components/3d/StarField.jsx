@@ -1,8 +1,13 @@
+/*
+  Particle Field — Floating warm-gold particles
+  that drift across the landing page background.
+  Inspired by the golden shimmer of Jamdani weaving.
+*/
 import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-function Particles({ count = 2500, scrollProgress = 0 }) {
+function Particles({ count = 1500, scrollProgress = 0 }) {
   const mesh = useRef();
 
   const { positions, sizes, speeds } = useMemo(() => {
@@ -28,14 +33,14 @@ function Particles({ count = 2500, scrollProgress = 0 }) {
 
     for (let i = 0; i < count; i++) {
       const i3 = i * 3;
-      posArr[i3 + 1] -= speeds[i] * 0.01;
-      posArr[i3] += Math.sin(time * 0.1 + i) * 0.002;
+      posArr[i3 + 1] -= speeds[i] * 0.008;
+      posArr[i3] += Math.sin(time * 0.08 + i) * 0.0015;
 
       if (posArr[i3 + 1] < -30) posArr[i3 + 1] = 30;
     }
 
     mesh.current.geometry.attributes.position.needsUpdate = true;
-    mesh.current.rotation.y = time * 0.02;
+    mesh.current.rotation.y = time * 0.015;
     mesh.current.rotation.x = scrollProgress * 0.3;
   });
 
@@ -56,10 +61,10 @@ function Particles({ count = 2500, scrollProgress = 0 }) {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.08}
-        color="#00f0ff"
+        size={0.07}
+        color="#D4A853"
         transparent
-        opacity={0.6}
+        opacity={0.5}
         sizeAttenuation
         depthWrite={false}
         blending={THREE.AdditiveBlending}
@@ -68,7 +73,7 @@ function Particles({ count = 2500, scrollProgress = 0 }) {
   );
 }
 
-function AccentStars({ count = 200 }) {
+function AccentStars({ count = 150 }) {
   const mesh = useRef();
 
   const positions = useMemo(() => {
@@ -83,7 +88,7 @@ function AccentStars({ count = 200 }) {
 
   useFrame((state) => {
     if (mesh.current) {
-      mesh.current.rotation.y = state.clock.getElapsedTime() * 0.005;
+      mesh.current.rotation.y = state.clock.getElapsedTime() * 0.004;
     }
   });
 
@@ -98,10 +103,10 @@ function AccentStars({ count = 200 }) {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.15}
-        color="#ffffff"
+        size={0.12}
+        color="#006A4E"
         transparent
-        opacity={0.9}
+        opacity={0.7}
         sizeAttenuation
         depthWrite={false}
       />
@@ -128,8 +133,8 @@ export default function StarField({ scrollProgress = 0 }) {
         gl={{ antialias: false, alpha: true }}
       >
         <ambientLight intensity={0.1} />
-        <Particles count={2500} scrollProgress={scrollProgress} />
-        <AccentStars count={200} />
+        <Particles count={1500} scrollProgress={scrollProgress} />
+        <AccentStars count={150} />
       </Canvas>
     </div>
   );

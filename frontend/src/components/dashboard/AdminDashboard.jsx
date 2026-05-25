@@ -79,8 +79,8 @@ export default function AdminDashboard() {
   const statCards = [
     { label: 'Active Emergencies', value: metrics.activeEmergencies, icon: Siren, color: '#ef4444' },
     { label: 'Unassigned', value: metrics.unassignedEmergencies, icon: AlertTriangle, color: '#f59e0b' },
-    { label: 'Pending Approvals', value: metrics.pendingApprovals, icon: Clock, color: '#8b5cf6' },
-    { label: 'Total Responders', value: metrics.totalResponders, icon: Shield, color: '#00f0ff' },
+    { label: 'Pending Approvals', value: metrics.pendingApprovals, icon: Clock, color: '#D4A853' },
+    { label: 'Total Responders', value: metrics.totalResponders, icon: Shield, color: '#006A4E' },
   ];
 
   const serviceTypeColor = (type) => {
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
         }}>
           <div style={{
             width: '36px', height: '36px', borderRadius: '10px',
-            background: 'linear-gradient(135deg, #00f0ff, #10b981)',
+            background: 'linear-gradient(135deg, #006A4E, #D4A853)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <Shield size={18} color="#030712" />
@@ -128,8 +128,8 @@ export default function AdminDashboard() {
               style={{
                 display: 'flex', alignItems: 'center', gap: '10px',
                 padding: '10px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
-                background: active ? 'rgba(0,240,255,0.08)' : 'transparent',
-                color: active ? '#00f0ff' : '#94a3b8',
+                background: active ? 'rgba(0,106,78,0.08)' : 'transparent',
+                color: active ? '#006A4E' : '#94a3b8',
                 fontSize: '13px', fontWeight: active ? 700 : 500,
                 textAlign: 'left', width: '100%', position: 'relative',
               }}
@@ -172,7 +172,7 @@ export default function AdminDashboard() {
                       </span>
                       <card.icon size={18} color={card.color} />
                     </div>
-                    <div style={{ fontSize: '28px', fontWeight: 800, color: card.color, fontFamily: "'Orbitron', monospace" }}>
+                    <div style={{ fontSize: '28px', fontWeight: 800, color: card.color, fontFamily: "'Poppins', sans-serif" }}>
                       {card.value}
                     </div>
                   </motion.div>
@@ -180,8 +180,8 @@ export default function AdminDashboard() {
               </div>
 
               {/* Active Emergencies */}
-              <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#e2e8f0', marginBottom: '16px', fontFamily: "'Orbitron', monospace" }}>
-                <Zap size={16} color="#00f0ff" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+              <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#e2e8f0', marginBottom: '16px', fontFamily: "'Poppins', sans-serif" }}>
+                <Zap size={16} color="#006A4E" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
                 Active Emergencies
               </h3>
               {activeEmergencies.length === 0 ? (
@@ -286,9 +286,9 @@ export default function AdminDashboard() {
                               onClick={() => handleManualAssign(e.id, r.id)}
                               style={{
                                 padding: '6px 12px', borderRadius: '8px',
-                                background: 'rgba(0,240,255,0.08)',
-                                border: '1px solid rgba(0,240,255,0.2)',
-                                color: '#00f0ff', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
+                                background: 'rgba(0,106,78,0.08)',
+                                border: '1px solid rgba(0,106,78,0.2)',
+                                color: '#006A4E', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
                               }}
                             >
                               {r.fullName} ({r.serviceType})

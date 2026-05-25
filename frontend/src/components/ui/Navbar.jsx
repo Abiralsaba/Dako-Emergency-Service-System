@@ -13,9 +13,9 @@ export default function Navbar() {
   };
 
   const roleBadge = {
-    CITIZEN: { label: 'Civilian', color: '#a1a1aa', icon: <UserCircle size={14} /> },
-    RESPONDER: { label: 'Responder', color: '#e11d48', icon: <Siren size={14} /> },
-    ADMIN: { label: 'Admin', color: '#f59e0b', icon: <Shield size={14} /> },
+    CITIZEN: { label: 'Civilian', color: '#006A4E', icon: <UserCircle size={14} /> },
+    RESPONDER: { label: 'Responder', color: '#F42A41', icon: <Siren size={14} /> },
+    ADMIN: { label: 'Admin', color: '#D4A853', icon: <Shield size={14} /> },
   };
 
   const badge = roleBadge[user?.role] || roleBadge.CITIZEN;
@@ -31,9 +31,9 @@ export default function Navbar() {
     }}>
       {/* Brand */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <Siren size={22} color="var(--accent)" />
-        <span style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '-0.5px' }}>
-          DAKO<span style={{ color: 'var(--accent)' }}> System</span>
+        <Siren size={22} color="#006A4E" />
+        <span style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '-0.5px', fontFamily: "'Poppins', sans-serif" }}>
+          DAKO<span style={{ color: '#006A4E' }}> System</span>
         </span>
       </div>
 
@@ -53,7 +53,7 @@ export default function Navbar() {
           color: '#a1a1aa', borderRadius: '8px', padding: '8px', cursor: 'pointer',
           display: 'flex', alignItems: 'center', transition: 'all 0.2s'
         }}
-          onMouseEnter={e => e.target.style.color = '#e11d48'}
+          onMouseEnter={e => e.target.style.color = '#F42A41'}
           onMouseLeave={e => e.target.style.color = '#a1a1aa'}
         >
           <LogOut size={16} />

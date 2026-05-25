@@ -2,7 +2,6 @@ import React from 'react';
 import { getStatusColor } from '../../utils/helpers';
 import { Check, Search, Send, CheckCircle, Navigation, MapPin, Zap } from 'lucide-react';
 
-// Matches the new Uber-like lifecycle
 const STEPS = [
   { key: 'SEARCHING', label: 'Searching', icon: Search },
   { key: 'OFFER_SENT', label: 'Offer Sent', icon: Send },
@@ -14,7 +13,6 @@ const STEPS = [
 ];
 
 export default function StatusStepper({ currentStatus }) {
-  // Find the current step index, fallback to -1 if cancelled/unassigned
   const currentIndex = STEPS.findIndex(s => s.key === currentStatus);
 
   return (
@@ -32,10 +30,10 @@ export default function StatusStepper({ currentStatus }) {
               <div style={{
                 width: '28px', height: '28px', borderRadius: '50%',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: isCompleted ? color : isActive ? `${color}33` : 'rgba(255,255,255,0.06)',
-                border: `2px solid ${isCompleted || isActive ? color : 'rgba(255,255,255,0.1)'}`,
+                background: isCompleted ? '#006A4E' : isActive ? `${color}33` : 'rgba(255,255,255,0.06)',
+                border: `2px solid ${isCompleted ? '#006A4E' : isActive ? color : 'rgba(255,255,255,0.1)'}`,
                 transition: 'all 0.4s ease',
-                boxShadow: isActive ? `0 0 12px ${color}55` : 'none',
+                boxShadow: isActive ? `0 0 12px #D4A85355` : 'none',
               }}>
                 {isCompleted ? <Check size={14} color="#fff" /> :
                   <StepIcon size={12} color={isActive ? color : '#555'} />
@@ -44,7 +42,7 @@ export default function StatusStepper({ currentStatus }) {
               {/* Label */}
               <span style={{
                 fontSize: '8px', fontWeight: 700, marginTop: '6px',
-                color: isCompleted || isActive ? color : '#555',
+                color: isCompleted ? '#006A4E' : isActive ? color : '#555',
                 textTransform: 'uppercase', letterSpacing: '0.3px',
                 textAlign: 'center', lineHeight: '1.2',
               }}>
@@ -55,7 +53,7 @@ export default function StatusStepper({ currentStatus }) {
             {i < STEPS.length - 1 && (
               <div style={{
                 flex: 0.3, height: '2px', marginBottom: '18px',
-                background: currentIndex >= 0 && i < currentIndex ? color : 'rgba(255,255,255,0.08)',
+                background: currentIndex >= 0 && i < currentIndex ? '#006A4E' : 'rgba(255,255,255,0.08)',
                 transition: 'background 0.4s ease',
               }} />
             )}

@@ -171,33 +171,101 @@ export default function CitizenDashboard() {
         initial={{ x: -30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.4 }}
         className="dashboard-sidebar"
       >
+        {/* ── Welcome Header ── */}
+        <div style={{
+          marginBottom: '28px', paddingBottom: '20px',
+          borderBottom: '1px solid rgba(0,106,78,0.12)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <div>
+              <div style={{
+                fontFamily: "'Poppins', sans-serif", fontSize: '11px', fontWeight: 600,
+                color: '#D4A853', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '4px',
+              }}>
+                DAKO Emergency
+              </div>
+              <h2 style={{
+                fontFamily: "'Poppins', sans-serif", fontSize: '22px', fontWeight: 700,
+                color: '#f1f5f9', margin: 0, lineHeight: 1.2,
+              }}>
+                Welcome, <span style={{ color: '#00C896' }}>{user?.fullName?.split(' ')[0] || 'Citizen'}</span>
+              </h2>
+            </div>
+            {/* GPS status pill */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '6px 12px', borderRadius: '20px',
+              background: hasRealLocation ? 'rgba(16,185,129,0.08)' : 'rgba(245,158,11,0.08)',
+              border: `1px solid ${hasRealLocation ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}`,
+            }}>
+              <div style={{
+                width: '7px', height: '7px', borderRadius: '50%',
+                background: hasRealLocation ? '#10b981' : '#f59e0b',
+                boxShadow: hasRealLocation ? '0 0 8px rgba(16,185,129,0.6)' : 'none',
+                animation: hasRealLocation ? 'pulse-glow 2s infinite' : 'none',
+              }} />
+              <span style={{
+                fontSize: '10px', fontWeight: 700, letterSpacing: '0.3px',
+                color: hasRealLocation ? '#10b981' : '#f59e0b',
+              }}>
+                {hasRealLocation ? 'GPS ACTIVE' : geoLoading ? 'ACQUIRING...' : 'NO GPS'}
+              </span>
+            </div>
+          </div>
+          {hasRealLocation && (
+            <div style={{ fontSize: '11px', color: '#5A6A7A', fontFamily: "'Inter', sans-serif" }}>
+              📍 {latitude.toFixed(4)}, {longitude.toFixed(4)}
+            </div>
+          )}
+        </div>
+
         <AnimatePresence mode="wait">
           {activeEmergency ? (
-            <motion.div key="tracking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#e2e8f0' }}>
-                  <span style={{ color: '#e11d48' }}>🚨</span> Emergency Active
-                </h3>
-                <motion.button
-                  whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-                  onClick={handleCancel}
-                  style={{
-                    background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)',
-                    color: '#ef4444', borderRadius: '8px', padding: '6px 12px', cursor: 'pointer',
-                    fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px',
-                    fontFamily: "'Orbitron', monospace",
-                  }}
-                >
-                  <X size={12} /> CANCEL
-                </motion.button>
+            <motion.div key="tracking" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              {/* Active emergency header card */}
+              <div style={{
+                padding: '18px', borderRadius: '14px', marginBottom: '20px',
+                background: 'linear-gradient(135deg, rgba(244,42,65,0.08), rgba(244,42,65,0.02))',
+                border: '1px solid rgba(244,42,65,0.2)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{
+                      width: '36px', height: '36px', borderRadius: '10px',
+                      background: 'rgba(244,42,65,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <AlertTriangle size={18} color="#F42A41" />
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#f1f5f9', margin: 0, fontFamily: "'Poppins', sans-serif" }}>
+                        Emergency Active
+                      </h3>
+                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+                        {activeEmergency.emergencyType?.replace(/_/g, ' ')}
+                      </span>
+                    </div>
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                    onClick={handleCancel}
+                    style={{
+                      background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)',
+                      color: '#ef4444', borderRadius: '8px', padding: '6px 12px', cursor: 'pointer',
+                      fontSize: '10px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px',
+                      fontFamily: "'Poppins', sans-serif", letterSpacing: '0.5px',
+                    }}
+                  >
+                    <X size={11} /> CANCEL
+                  </motion.button>
+                </div>
+                <p style={{ fontSize: '12px', color: '#8899AA', margin: 0, lineHeight: 1.5 }}>
+                  {activeEmergency.status === 'SEARCHING' || activeEmergency.status === 'OFFER_SENT'
+                    ? 'Searching for available responders nearby...'
+                    : activeEmergency.status === 'UNASSIGNED'
+                    ? 'No responder available. Admin has been notified.'
+                    : 'Help is navigating to your location. Stay safe.'}
+                </p>
               </div>
-              <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '24px' }}>
-                {activeEmergency.status === 'SEARCHING' || activeEmergency.status === 'OFFER_SENT'
-                  ? 'Searching for available responders nearby...'
-                  : activeEmergency.status === 'UNASSIGNED'
-                  ? 'No responder available. Admin has been notified.'
-                  : 'Help is navigating to your location. Stay safe.'}
-              </p>
 
               <StatusStepper currentStatus={activeEmergency.status} />
 
@@ -207,14 +275,24 @@ export default function CitizenDashboard() {
                   animate={{ opacity: [0.5, 1, 0.5] }}
                   transition={{ duration: 2, repeat: Infinity }}
                   style={{
-                    marginTop: '20px', padding: '16px', borderRadius: '12px',
-                    background: 'rgba(0, 240, 255, 0.05)', border: '1px solid rgba(0, 240, 255, 0.2)',
+                    marginTop: '20px', padding: '20px', borderRadius: '14px',
+                    background: 'linear-gradient(135deg, rgba(0,106,78,0.06), rgba(212,168,83,0.03))',
+                    border: '1px solid rgba(0,106,78,0.15)',
                     textAlign: 'center',
                   }}
                 >
-                  <Clock size={24} color="#00f0ff" style={{ marginBottom: '8px' }} />
-                  <div style={{ fontSize: '13px', color: '#00f0ff', fontWeight: 600 }}>
+                  <div style={{
+                    width: '48px', height: '48px', borderRadius: '50%', margin: '0 auto 12px',
+                    background: 'rgba(0,106,78,0.1)', border: '2px solid rgba(0,106,78,0.25)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <Clock size={22} color="#006A4E" />
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#006A4E', fontWeight: 600, fontFamily: "'Poppins', sans-serif" }}>
                     Finding nearby responders...
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#5A6A7A', marginTop: '6px' }}>
+                    This usually takes less than 30 seconds
                   </div>
                 </motion.div>
               )}
@@ -222,12 +300,15 @@ export default function CitizenDashboard() {
               {/* No responder available */}
               {activeEmergency.status === 'UNASSIGNED' && (
                 <div style={{
-                  marginTop: '20px', padding: '16px', borderRadius: '12px',
-                  background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)',
+                  marginTop: '20px', padding: '20px', borderRadius: '14px',
+                  background: 'rgba(239, 68, 68, 0.06)', border: '1px solid rgba(239, 68, 68, 0.2)',
                   textAlign: 'center',
                 }}>
                   <div style={{ fontSize: '13px', color: '#ef4444', fontWeight: 600 }}>
-                    No available responders nearby. Admin has been notified for manual dispatch.
+                    No available responders nearby
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px' }}>
+                    Admin has been notified for manual dispatch
                   </div>
                 </div>
               )}
@@ -235,79 +316,130 @@ export default function CitizenDashboard() {
               {/* Responder info card */}
               {activeEmergency.responderName && (
                 <div style={{
-                  marginTop: '24px', padding: '16px', borderRadius: '12px',
-                  background: 'rgba(0, 240, 255, 0.04)', border: '1px solid rgba(0, 240, 255, 0.15)',
+                  marginTop: '24px', padding: '18px', borderRadius: '14px',
+                  background: 'linear-gradient(135deg, rgba(0,106,78,0.05), rgba(0,106,78,0.01))',
+                  border: '1px solid rgba(0,106,78,0.12)',
                 }}>
-                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px', fontFamily: "'Orbitron', monospace" }}>
+                  <div style={{
+                    fontSize: '10px', color: '#D4A853', fontWeight: 700, textTransform: 'uppercase',
+                    marginBottom: '14px', letterSpacing: '1.5px', fontFamily: "'Poppins', sans-serif",
+                  }}>
                     Assigned Responder
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                    <User size={16} color="#00f0ff" />
-                    <span style={{ fontSize: '15px', fontWeight: 600, color: '#e2e8f0' }}>{activeEmergency.responderName}</span>
-                  </div>
-                  {activeEmergency.responderPhone && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <Phone size={16} color="#64748b" />
-                      <span style={{ fontSize: '14px', color: '#94a3b8' }}>{activeEmergency.responderPhone}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                    <div style={{
+                      width: '38px', height: '38px', borderRadius: '10px',
+                      background: 'rgba(0,106,78,0.1)', border: '1px solid rgba(0,106,78,0.2)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <User size={18} color="#006A4E" />
                     </div>
-                  )}
+                    <div>
+                      <div style={{ fontSize: '15px', fontWeight: 600, color: '#f1f5f9' }}>{activeEmergency.responderName}</div>
+                      {activeEmergency.responderPhone && (
+                        <div style={{ fontSize: '12px', color: '#8899AA', marginTop: '2px' }}>
+                          <Phone size={11} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                          {activeEmergency.responderPhone}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   {activeEmergency.responderVehicle && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Car size={16} color="#64748b" />
-                      <span style={{ fontSize: '14px', color: '#94a3b8' }}>{activeEmergency.responderVehicle}</span>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: '6px',
+                      padding: '8px 12px', borderRadius: '8px',
+                      background: 'rgba(212,168,83,0.06)', border: '1px solid rgba(212,168,83,0.12)',
+                      fontSize: '12px', color: '#D4A853',
+                    }}>
+                      <Car size={14} /> {activeEmergency.responderVehicle}
                     </div>
                   )}
                 </div>
               )}
             </motion.div>
           ) : (
-            <motion.div key="sos" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '4px', color: '#e2e8f0' }}>Request Emergency</h3>
-              <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '24px' }}>
-                Select type and hit SOS. We'll find the nearest responder.
-              </p>
+            <motion.div key="sos" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              {/* Section title */}
+              <div style={{ marginBottom: '20px' }}>
+                <h3 style={{
+                  fontSize: '17px', fontWeight: 700, color: '#f1f5f9', margin: '0 0 6px',
+                  fontFamily: "'Poppins', sans-serif",
+                }}>
+                  Request Emergency
+                </h3>
+                <p style={{ fontSize: '13px', color: '#5A6A7A', margin: 0, lineHeight: 1.5 }}>
+                  Select service type, describe the situation, and press SOS
+                </p>
+              </div>
 
-              <ServiceTypeSelector selected={emergencyType} onSelect={setEmergencyType} />
+              {/* Service type selector in a card */}
+              <div style={{
+                padding: '16px', borderRadius: '14px', marginBottom: '16px',
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(0,106,78,0.08)',
+              }}>
+                <div style={{
+                  fontSize: '10px', fontWeight: 700, color: '#8899AA', textTransform: 'uppercase',
+                  letterSpacing: '1px', marginBottom: '12px', fontFamily: "'Poppins', sans-serif",
+                }}>
+                  Service Type
+                </div>
+                <ServiceTypeSelector selected={emergencyType} onSelect={setEmergencyType} />
+              </div>
 
-              <textarea
-                placeholder="Describe your situation briefly (optional)"
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-                className="input-field"
-                style={{ resize: 'none', height: '80px', marginBottom: '16px' }}
-              />
+              {/* Description area */}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{
+                  fontSize: '10px', fontWeight: 700, color: '#8899AA', textTransform: 'uppercase',
+                  letterSpacing: '1px', marginBottom: '8px', fontFamily: "'Poppins', sans-serif",
+                }}>
+                  Situation Details
+                </div>
+                <textarea
+                  placeholder="Describe your situation briefly (optional)"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  className="input-field"
+                  style={{ resize: 'none', height: '80px', marginBottom: '0' }}
+                />
+              </div>
 
-              {/* GPS Status */}
+              {/* GPS Status — more compact */}
               {geoLoading && !hasRealLocation && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '16px', fontSize: '12px', color: '#f59e0b', fontWeight: 600 }}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px',
+                  padding: '10px 14px', borderRadius: '10px',
+                  background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.12)',
+                  fontSize: '12px', color: '#f59e0b', fontWeight: 600,
+                }}>
                   <Loader size={14} className="spin" /> Acquiring GPS signal...
                 </div>
               )}
               {geoError && !hasRealLocation && (
-                <div style={{ marginBottom: '16px', padding: '12px', borderRadius: '10px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
+                <div style={{
+                  marginBottom: '16px', padding: '14px', borderRadius: '12px',
+                  background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)',
+                }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#ef4444', fontWeight: 600, marginBottom: '6px' }}>
                     <AlertTriangle size={14} /> {geoError}
                   </div>
                   {permissionState === 'denied' && (
-                    <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '8px' }}>
+                    <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '10px', lineHeight: 1.4 }}>
                       Open your browser/device settings and allow location access for this site.
                     </div>
                   )}
-                  <button
+                  <motion.button
                     onClick={retryGeo}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     style={{
-                      display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px',
-                      color: '#00f0ff', background: 'rgba(0,240,255,0.08)', border: '1px solid rgba(0,240,255,0.2)',
-                      borderRadius: '6px', padding: '4px 10px', cursor: 'pointer', fontWeight: 600,
+                      display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px',
+                      color: '#006A4E', background: 'rgba(0,106,78,0.08)', border: '1px solid rgba(0,106,78,0.15)',
+                      borderRadius: '8px', padding: '6px 14px', cursor: 'pointer', fontWeight: 600,
                     }}
                   >
                     <RefreshCw size={12} /> Retry GPS
-                  </button>
-                </div>
-              )}
-              {hasRealLocation && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '16px', fontSize: '12px', color: '#10b981', fontWeight: 600 }}>
-                  <MapPin size={14} /> GPS locked: {latitude.toFixed(4)}, {longitude.toFixed(4)}
+                  </motion.button>
                 </div>
               )}
 
@@ -316,12 +448,21 @@ export default function CitizenDashboard() {
           )}
         </AnimatePresence>
 
-        {/* History */}
+        {/* ── History Section ── */}
         {history.length > 0 && (
-          <div style={{ marginTop: '32px' }}>
-            <h4 style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.5px', fontFamily: "'Orbitron', monospace" }}>
-              History
-            </h4>
+          <div style={{ marginTop: '28px' }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px',
+            }}>
+              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(0,106,78,0.15), transparent)' }} />
+              <h4 style={{
+                fontSize: '10px', fontWeight: 700, color: '#5A6A7A', textTransform: 'uppercase',
+                letterSpacing: '1.5px', fontFamily: "'Poppins', sans-serif", whiteSpace: 'nowrap',
+              }}>
+                Recent History
+              </h4>
+              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(0,106,78,0.15), transparent)' }} />
+            </div>
             {history.slice(0, 5).map(e => <EmergencyCard key={e.id} emergency={e} />)}
           </div>
         )}

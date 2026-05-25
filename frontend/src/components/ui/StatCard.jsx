@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
-export default function StatCard({ label, value, icon: Icon, color = '#e11d48' }) {
+export default function StatCard({ label, value, icon: Icon, color = '#F42A41' }) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {

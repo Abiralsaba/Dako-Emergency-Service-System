@@ -24,13 +24,13 @@ export default function EmergencyMap({ center, children, directions = null, zoom
     return (
       <div style={{
         width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: '#0a0f1e', color: '#00f0ff', fontSize: '14px', fontWeight: 600,
-        fontFamily: "'Orbitron', monospace", letterSpacing: '2px',
+        background: '#0a0f1e', color: '#006A4E', fontSize: '14px', fontWeight: 600,
+        fontFamily: "'Poppins', sans-serif", letterSpacing: '2px',
       }}>
         <div style={{ textAlign: 'center' }}>
           <div className="spin" style={{
-            width: '40px', height: '40px', border: '3px solid rgba(0,240,255,0.2)',
-            borderTop: '3px solid #00f0ff', borderRadius: '50%', margin: '0 auto 16px',
+            width: '40px', height: '40px', border: '3px solid rgba(0,106,78,0.2)',
+            borderTop: '3px solid #006A4E', borderRadius: '50%', margin: '0 auto 16px',
           }} />
           INITIALIZING MAP ENGINE
         </div>
@@ -61,7 +61,7 @@ export default function EmergencyMap({ center, children, directions = null, zoom
             options={{
               suppressMarkers: true,
               polylineOptions: {
-                strokeColor: '#e11d48', // High-visibility red for emergency route on a light map
+                strokeColor: '#F42A41',
                 strokeOpacity: 1,
                 strokeWeight: 6,
                 zIndex: 10,
@@ -85,39 +85,39 @@ export default function EmergencyMap({ center, children, directions = null, zoom
           transform: 'translateX(-50%)',
           background: 'rgba(10, 15, 30, 0.95)',
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(0, 240, 255, 0.3)',
+          border: '1px solid rgba(0, 106, 78, 0.3)',
           borderRadius: '16px',
           padding: '16px 32px',
           display: 'flex',
           gap: '32px',
           alignItems: 'center',
-          boxShadow: '0 0 30px rgba(0, 240, 255, 0.15), 0 10px 40px rgba(0,0,0,0.5)',
+          boxShadow: '0 0 30px rgba(0, 106, 78, 0.15), 0 10px 40px rgba(0,0,0,0.5)',
           zIndex: 100,
         }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{
               fontSize: '10px', fontWeight: 700, color: '#64748b',
               textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '4px',
-              fontFamily: "'Orbitron', monospace",
+              fontFamily: "'Poppins', sans-serif",
             }}>ETA</div>
             <div style={{
-              fontSize: '22px', fontWeight: 800, color: '#00f0ff',
-              fontFamily: "'Orbitron', monospace",
+              fontSize: '22px', fontWeight: 800, color: '#D4A853',
+              fontFamily: "'Poppins', sans-serif",
             }}>{routeInfo.duration}</div>
           </div>
           <div style={{
             width: '1px', height: '40px',
-            background: 'linear-gradient(transparent, rgba(0,240,255,0.4), transparent)',
+            background: 'linear-gradient(transparent, rgba(0,106,78,0.4), transparent)',
           }} />
           <div style={{ textAlign: 'center' }}>
             <div style={{
               fontSize: '10px', fontWeight: 700, color: '#64748b',
               textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '4px',
-              fontFamily: "'Orbitron', monospace",
+              fontFamily: "'Poppins', sans-serif",
             }}>Distance</div>
             <div style={{
-              fontSize: '22px', fontWeight: 800, color: '#10b981',
-              fontFamily: "'Orbitron', monospace",
+              fontSize: '22px', fontWeight: 800, color: '#006A4E',
+              fontFamily: "'Poppins', sans-serif",
             }}>{routeInfo.distance}</div>
           </div>
         </div>

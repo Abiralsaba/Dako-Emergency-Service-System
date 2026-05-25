@@ -232,7 +232,7 @@ export default function ResponderDashboard() {
               fontSize: '13px', fontWeight: 700, marginBottom: '24px',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
               border: `1px solid ${isOnline ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.08)'}`,
-              fontFamily: "'Orbitron', monospace", letterSpacing: '2px', textTransform: 'uppercase',
+              fontFamily: "'Poppins', sans-serif", letterSpacing: '2px', textTransform: 'uppercase',
             }}
           >
             <Power size={18} />
@@ -280,24 +280,24 @@ export default function ResponderDashboard() {
               initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
               style={{
                 padding: '20px', borderRadius: '16px', marginBottom: '24px',
-                background: 'rgba(0, 240, 255, 0.06)',
-                border: '2px solid rgba(0, 240, 255, 0.4)',
-                boxShadow: '0 0 40px rgba(0, 240, 255, 0.15)',
+                background: 'rgba(0, 106, 78, 0.06)',
+                border: '2px solid rgba(0, 106, 78, 0.4)',
+                boxShadow: '0 0 40px rgba(0, 106, 78, 0.15)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <AlertTriangle size={18} color="#00f0ff" />
-                  <span style={{ fontSize: '14px', fontWeight: 800, color: '#00f0ff', fontFamily: "'Orbitron', monospace" }}>
+                  <AlertTriangle size={18} color="#006A4E" />
+                  <span style={{ fontSize: '14px', fontWeight: 800, color: '#006A4E', fontFamily: "'Poppins', sans-serif" }}>
                     INCOMING
                   </span>
                 </div>
                 <div style={{
                   width: '44px', height: '44px', borderRadius: '50%',
-                  border: '3px solid #00f0ff',
+                  border: '3px solid #006A4E',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '16px', fontWeight: 800, color: '#00f0ff',
-                  fontFamily: "'Orbitron', monospace",
+                  fontSize: '16px', fontWeight: 800, color: '#006A4E',
+                  fontFamily: "'Poppins', sans-serif",
                 }}>
                   {offerCountdown}
                 </div>
@@ -330,7 +330,7 @@ export default function ResponderDashboard() {
                     flex: 1, padding: '12px', borderRadius: '10px', border: 'none', cursor: 'pointer',
                     background: 'linear-gradient(135deg, #10b981, #059669)',
                     color: '#fff', fontSize: '13px', fontWeight: 800,
-                    fontFamily: "'Orbitron', monospace", letterSpacing: '1px',
+                    fontFamily: "'Poppins', sans-serif", letterSpacing: '1px',
                   }}
                 >
                   ACCEPT
@@ -342,7 +342,7 @@ export default function ResponderDashboard() {
                     flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid rgba(239,68,68,0.3)',
                     background: 'rgba(239,68,68,0.1)', cursor: 'pointer',
                     color: '#ef4444', fontSize: '13px', fontWeight: 800,
-                    fontFamily: "'Orbitron', monospace", letterSpacing: '1px',
+                    fontFamily: "'Poppins', sans-serif", letterSpacing: '1px',
                   }}
                 >
                   DECLINE
@@ -356,16 +356,16 @@ export default function ResponderDashboard() {
           <div>
             {/* Alert header */}
             <motion.div
-              animate={{ boxShadow: ['0 0 0px rgba(0,240,255,0)', '0 0 20px rgba(0,240,255,0.15)', '0 0 0px rgba(0,240,255,0)'] }}
+              animate={{ boxShadow: ['0 0 0px rgba(0,106,78,0)', '0 0 20px rgba(0,106,78,0.15)', '0 0 0px rgba(0,106,78,0)'] }}
               transition={{ duration: 2, repeat: Infinity }}
               style={{
                 padding: '16px', borderRadius: '12px', marginBottom: '24px',
-                background: 'rgba(0, 240, 255, 0.05)', border: '1px solid rgba(0, 240, 255, 0.2)',
+                background: 'rgba(0, 106, 78, 0.05)', border: '1px solid rgba(0, 106, 78, 0.2)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <AlertTriangle size={18} color="#00f0ff" />
-                <span style={{ fontSize: '15px', fontWeight: 700, color: '#00f0ff', fontFamily: "'Orbitron', monospace" }}>
+                <AlertTriangle size={18} color="#006A4E" />
+                <span style={{ fontSize: '15px', fontWeight: 700, color: '#006A4E', fontFamily: "'Poppins', sans-serif" }}>
                   {activeJob.emergencyType} Emergency
                 </span>
               </div>
@@ -381,11 +381,11 @@ export default function ResponderDashboard() {
               padding: '16px', borderRadius: '12px', marginTop: '24px',
               background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
             }}>
-              <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px', fontFamily: "'Orbitron', monospace" }}>
+              <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px', fontFamily: "'Poppins', sans-serif" }}>
                 Citizen Details
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <User size={16} color="#00f0ff" />
+                <User size={16} color="#006A4E" />
                 <span style={{ fontSize: '15px', fontWeight: 600, color: '#e2e8f0' }}>{activeJob.citizenName}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -408,7 +408,7 @@ export default function ResponderDashboard() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                     textTransform: 'uppercase', letterSpacing: '2px',
                     border: `1px solid ${action.color}40`,
-                    fontFamily: "'Orbitron', monospace",
+                    fontFamily: "'Poppins', sans-serif",
                   }}
                 >
                   <action.icon size={18} /> {action.label}
