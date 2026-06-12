@@ -7,6 +7,8 @@ public class EmergencyRequestDTO {
     private String description;
     private Double latitude;
     private Double longitude;
+    private Double baseFare;
+    private Double perKmFare;
 
     public EmergencyRequestDTO() {}
 
@@ -20,4 +22,8 @@ public class EmergencyRequestDTO {
     public void setLatitude(Double latitude) { this.latitude = latitude; }
     public Double getLongitude() { return longitude; }
     public void setLongitude(Double longitude) { this.longitude = longitude; }
+    public Double getBaseFare() { return baseFare; }
+    public void setBaseFare(Double baseFare) { this.baseFare = baseFare; }
+    public Double getPerKmFare() { return perKmFare; }
+    public void setPerKmFare(Double perKmFare) { this.perKmFare = perKmFare; }
 }

@@ -10,6 +10,7 @@ import {
 import { useAuth } from '../store/AuthContext';
 import authService from '../services/authService';
 import toast from 'react-hot-toast';
+import authBg from '../assets/auth-bg.png';
 
 const SERVICE_TYPES = [
   { key: 'AMBULANCE', label: 'Ambulance', icon: Heart, color: '#10b981' },
@@ -281,13 +282,25 @@ export default function AuthPage() {
         justifyContent: 'center',
         padding: '40px 24px',
         overflowY: 'auto',
-        background: '#0C1219',
+        background: `linear-gradient(rgba(12, 18, 25, 0.6), rgba(12, 18, 25, 0.8)), url(${authBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
       }}>
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          style={{ width: '100%', maxWidth: '480px' }}
+          style={{ 
+            width: '100%', 
+            maxWidth: '520px',
+            background: 'rgba(18, 26, 36, 0.65)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            padding: '40px',
+            borderRadius: '24px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            boxShadow: '0 24px 48px rgba(0, 0, 0, 0.4)'
+          }}
         >
           {/* Back button */}
           <motion.button

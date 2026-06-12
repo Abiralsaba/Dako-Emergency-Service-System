@@ -8,18 +8,22 @@ import locationService from '../../services/locationService';
 import EmergencyMap from '../map/EmergencyMap';
 import ServiceMarker from '../map/ServiceMarker';
 import SOSButton from '../ui/SOSButton';
-import ServiceTypeSelector from '../ui/ServiceTypeCard';
+import ServiceTypeSelector, { AMBULANCE_OPTIONS } from '../ui/ServiceTypeCard';
 import StatusStepper from '../ui/StatusStepper';
 import EmergencyCard from '../ui/EmergencyCard';
-import { Phone, User, Car, MapPin, X, Clock, AlertTriangle, RefreshCw, Loader } from 'lucide-react';
+import FirePhotoCapture from '../ui/FirePhotoCapture';
+import { Phone, User, Car, MapPin, X, Clock, AlertTriangle, RefreshCw, Loader, Activity } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 export default function CitizenDashboard() {
   const { user } = useAuth();
-  const { latitude, longitude, error: geoError, loading: geoLoading, permissionState, retry: retryGeo, hasRealLocation } = useGeolocation();
+  const navigate = useNavigate();
+  const { latitude, longitude, error: geoError, loading: geoLoading, permissionState, retry: retryGeo, hasRealLocation, setManualLocation } = useGeolocation();
   const { subscribe } = useWebSocket();
 
-  const [emergencyType, setEmergencyType] = useState('');
+  const [emergencyType, setEmergencyType] = useState(null);
+  const [ambulanceType, setAmbulanceType] = useState(null);
   const [description, setDescription] = useState('');
   const [activeEmergency, setActiveEmergency] = useState(null);
   const [history, setHistory] = useState([]);
@@ -27,6 +31,8 @@ export default function CitizenDashboard() {
   const [responderPos, setResponderPos] = useState(null);
   const [directions, setDirections] = useState(null);
   const [routeInfo, setRouteInfo] = useState(null);
+  const [showFireCapture, setShowFireCapture] = useState(false);
+  const [fireAnalyzing, setFireAnalyzing] = useState(false);
   const directionsServiceRef = useRef(null);
 
   useEffect(() => {
@@ -55,10 +61,17 @@ export default function CitizenDashboard() {
         loadEmergencies();
       }
     });
+
     subscribe(`/topic/location/${activeEmergency.id}`, (data) => {
       setResponderPos({ lat: data.latitude, lng: data.longitude });
     });
-  }, [activeEmergency?.id]);
+  }, [activeEmergency, subscribe]);
+
+  useEffect(() => {
+    if (geoError) {
+      toast.error(`Browser GPS Error: ${geoError}`, { duration: 5000 });
+    }
+  }, [geoError]);
 
   // Compute route when positions change
   useEffect(() => {
@@ -128,18 +141,118 @@ export default function CitizenDashboard() {
 
   const handleSOS = async () => {
     if (!emergencyType) { toast.error('Select emergency type first!'); return; }
-    if (!latitude || !longitude) { toast.error('Waiting for GPS location...'); return; }
+    if (!latitude || !longitude) {
+      toast.error('Location is required to dispatch help');
+      return;
+    }
+
+    if (emergencyType === 'MEDICAL' && !ambulanceType) {
+      toast.error('Please select an ambulance type');
+      return;
+    }
+
+    // 🔥 Intercept FIRE type — require photo verification
+    if (emergencyType === 'FIRE') {
+      setShowFireCapture(true);
+      return;
+    }
+
+    let finalDescription = description;
+    let baseFare = null;
+    let perKmFare = null;
+
+    if (emergencyType === 'GENERAL') {
+      baseFare = 0;
+      perKmFare = 50;
+    } else if (emergencyType === 'POLICE' || emergencyType === 'FIRE') {
+      baseFare = 0;
+      perKmFare = 0;
+    }
+
+    if (emergencyType === 'MEDICAL' && ambulanceType) {
+      const amb = AMBULANCE_OPTIONS.find(a => a.id === ambulanceType);
+      if (amb) {
+        finalDescription = `[Requested: ${amb.label} - ${amb.price}] ${description}`;
+        baseFare = amb.base;
+        perKmFare = amb.perKm;
+      }
+    }
 
     setLoading(true);
     try {
       const res = await emergencyService.create({
         emergencyType,
-        description,
+        description: finalDescription,
+        latitude,
+        longitude,
+        baseFare,
+        perKmFare
+      });
+      setActiveEmergency(res.data);
+      toast.success('Emergency dispatched! Searching for responders...');
+      setDescription('');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to create emergency');
+    }
+    setLoading(false);
+  };
+
+  // 🔥 Fire detection — send image to AI for analysis
+  const handleFireDetected = async (formData) => {
+    formData.append('latitude', latitude);
+    formData.append('longitude', longitude);
+    if (description) formData.append('description', description);
+
+    try {
+      const res = await emergencyService.detectFire(formData);
+      const result = res.data;
+
+      if (result.fire_detected && result.emergency_created) {
+        // Fire confirmed AND emergency auto-created
+        toast.success('🔥 Fire confirmed! Emergency dispatched as CRITICAL!');
+        setActiveEmergency(result.emergency);
+        setShowFireCapture(false);
+        setDescription('');
+      } else if (result.fire_detected && !result.emergency_created) {
+        // Fire detected but auto-dispatch failed — fallback to standard creation
+        toast.loading('🔥 Fire confirmed! Creating emergency...', { duration: 2000 });
+        try {
+          const fallbackRes = await emergencyService.create({
+            emergencyType: 'FIRE',
+            description: (description ? description + ' | ' : '') +
+              '🔥 AI Fire Detection (Confidence: ' + Math.round((result.confidence || 0) * 100) + '%)',
+            latitude,
+            longitude,
+          });
+          setActiveEmergency(fallbackRes.data);
+          setShowFireCapture(false);
+          setDescription('');
+          toast.success('🔥 Fire emergency dispatched!');
+        } catch (fallbackErr) {
+          toast.error('Failed to create emergency: ' + (fallbackErr.response?.data?.message || fallbackErr.message));
+        }
+      }
+
+      return result;
+    } catch (err) {
+      toast.error('Fire analysis failed: ' + (err.response?.data?.message || err.message));
+      throw err;
+    }
+  };
+
+  // 🔥 Manual fire submit — when AI doesn't detect but citizen insists
+  const handleManualFireSubmit = async () => {
+    setShowFireCapture(false);
+    setLoading(true);
+    try {
+      const res = await emergencyService.create({
+        emergencyType: 'FIRE',
+        description: (description ? description + ' | ' : '') + '⚠️ Manual submission — AI did not detect fire',
         latitude,
         longitude,
       });
       setActiveEmergency(res.data);
-      toast.success('Emergency dispatched! Searching for responders...');
+      toast.success('Fire emergency submitted for manual review.');
       setDescription('');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to create emergency');
@@ -208,7 +321,7 @@ export default function CitizenDashboard() {
                 fontSize: '10px', fontWeight: 700, letterSpacing: '0.3px',
                 color: hasRealLocation ? '#10b981' : '#f59e0b',
               }}>
-                {hasRealLocation ? 'GPS ACTIVE' : geoLoading ? 'ACQUIRING...' : 'NO GPS'}
+                {hasRealLocation ? 'GPS ACTIVE' : geoLoading ? 'ACQUIRING...' : 'USING FALLBACK'}
               </span>
             </div>
           </div>
@@ -218,6 +331,7 @@ export default function CitizenDashboard() {
             </div>
           )}
         </div>
+
 
         <AnimatePresence mode="wait">
           {activeEmergency ? (
@@ -316,29 +430,24 @@ export default function CitizenDashboard() {
               {/* Responder info card */}
               {activeEmergency.responderName && (
                 <div style={{
-                  marginTop: '24px', padding: '18px', borderRadius: '14px',
-                  background: 'linear-gradient(135deg, rgba(0,106,78,0.05), rgba(0,106,78,0.01))',
-                  border: '1px solid rgba(0,106,78,0.12)',
+                  marginTop: '24px', padding: '16px', borderRadius: '16px',
+                  background: '#1A1D21', border: '1px solid rgba(255,255,255,0.08)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between'
                 }}>
-                  <div style={{
-                    fontSize: '10px', color: '#D4A853', fontWeight: 700, textTransform: 'uppercase',
-                    marginBottom: '14px', letterSpacing: '1.5px', fontFamily: "'Poppins', sans-serif",
-                  }}>
-                    Assigned Responder
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <div style={{
-                      width: '38px', height: '38px', borderRadius: '10px',
-                      background: 'rgba(0,106,78,0.1)', border: '1px solid rgba(0,106,78,0.2)',
+                      width: '56px', height: '56px', borderRadius: '50%',
+                      background: 'rgba(0,106,78,0.2)', border: '1px solid rgba(0,106,78,0.3)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                      <User size={18} color="#006A4E" />
+                      <User size={28} color="#00C896" />
                     </div>
                     <div>
-                      <div style={{ fontSize: '15px', fontWeight: 600, color: '#f1f5f9' }}>{activeEmergency.responderName}</div>
+                      <div style={{ fontSize: '18px', fontWeight: 600, color: '#F1F5F9', fontFamily: "'Inter', sans-serif" }}>
+                        {activeEmergency.responderName}
+                      </div>
                       {activeEmergency.responderPhone && (
-                        <div style={{ fontSize: '12px', color: '#8899AA', marginTop: '2px' }}>
-                          <Phone size={11} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                        <div style={{ fontSize: '14px', color: '#94A3B8', marginTop: '4px', fontFamily: "'Inter', sans-serif" }}>
                           {activeEmergency.responderPhone}
                         </div>
                       )}
@@ -346,12 +455,10 @@ export default function CitizenDashboard() {
                   </div>
                   {activeEmergency.responderVehicle && (
                     <div style={{
-                      display: 'flex', alignItems: 'center', gap: '6px',
-                      padding: '8px 12px', borderRadius: '8px',
-                      background: 'rgba(212,168,83,0.06)', border: '1px solid rgba(212,168,83,0.12)',
-                      fontSize: '12px', color: '#D4A853',
+                      fontSize: '16px', fontWeight: 600, color: '#F1F5F9', fontFamily: "'Inter', sans-serif",
+                      background: 'rgba(255,255,255,0.05)', padding: '6px 12px', borderRadius: '8px'
                     }}>
-                      <Car size={14} /> {activeEmergency.responderVehicle}
+                      {activeEmergency.responderVehicle}
                     </div>
                   )}
                 </div>
@@ -362,29 +469,29 @@ export default function CitizenDashboard() {
               {/* Section title */}
               <div style={{ marginBottom: '20px' }}>
                 <h3 style={{
-                  fontSize: '17px', fontWeight: 700, color: '#f1f5f9', margin: '0 0 6px',
-                  fontFamily: "'Poppins', sans-serif",
+                  fontSize: '24px', fontWeight: 600, color: '#f1f5f9', margin: '0 0 6px',
+                  fontFamily: "'Inter', sans-serif", letterSpacing: '-0.5px'
                 }}>
-                  Request Emergency
+                  Emergency Services
                 </h3>
-                <p style={{ fontSize: '13px', color: '#5A6A7A', margin: 0, lineHeight: 1.5 }}>
-                  Select service type, describe the situation, and press SOS
+                <p style={{ fontSize: '14px', color: '#94A3B8', margin: 0, fontFamily: "'Inter', sans-serif" }}>
+                  Units we think are best for you
                 </p>
               </div>
 
               {/* Service type selector in a card */}
               <div style={{
-                padding: '16px', borderRadius: '14px', marginBottom: '16px',
-                background: 'rgba(255,255,255,0.02)',
-                border: '1px solid rgba(0,106,78,0.08)',
+                marginBottom: '16px',
               }}>
-                <div style={{
-                  fontSize: '10px', fontWeight: 700, color: '#8899AA', textTransform: 'uppercase',
-                  letterSpacing: '1px', marginBottom: '12px', fontFamily: "'Poppins', sans-serif",
-                }}>
-                  Service Type
-                </div>
-                <ServiceTypeSelector selected={emergencyType} onSelect={setEmergencyType} />
+                <ServiceTypeSelector 
+                  selected={emergencyType} 
+                  onSelect={(t) => {
+                    setEmergencyType(t);
+                    if (t !== 'MEDICAL') setAmbulanceType(null);
+                  }} 
+                  subSelected={ambulanceType}
+                  onSubSelect={setAmbulanceType}
+                />
               </div>
 
               {/* Description area */}
@@ -443,7 +550,22 @@ export default function CitizenDashboard() {
                 </div>
               )}
 
-              <SOSButton onClick={handleSOS} disabled={loading || !emergencyType} />
+              {/* 🔥 Fire Photo Capture — shown when FIRE type selected and SOS pressed */}
+              {showFireCapture ? (
+                <FirePhotoCapture
+                  onFireDetected={handleFireDetected}
+                  onManualSubmit={handleManualFireSubmit}
+                  onCancel={() => setShowFireCapture(false)}
+                  analyzing={fireAnalyzing}
+                  setAnalyzing={setFireAnalyzing}
+                />
+              ) : (
+                <SOSButton 
+                  onClick={handleSOS} 
+                  disabled={loading || !emergencyType || (emergencyType === 'MEDICAL' && !ambulanceType)} 
+                  typeLabel={emergencyType ? emergencyType.replace('_', ' ') : ''} 
+                />
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -470,7 +592,29 @@ export default function CitizenDashboard() {
 
       {/* Right side — Google Map */}
       <div className="dashboard-map">
-        <EmergencyMap center={mapCenter} directions={directions} routeInfo={routeInfo}>
+        {/* Hint overlay for users */}
+        <div style={{
+          position: 'absolute', top: '20px', left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(10, 15, 30, 0.8)', backdropFilter: 'blur(10px)',
+          padding: '8px 16px', borderRadius: '20px', zIndex: 10,
+          border: '1px solid rgba(0, 106, 78, 0.3)', color: '#00C896',
+          fontSize: '11px', fontWeight: 700, fontFamily: "'Poppins', sans-serif",
+          boxShadow: '0 4px 15px rgba(0,0,0,0.3)', pointerEvents: 'none'
+        }}>
+          🎯 Tap anywhere on the map to set your exact location
+        </div>
+
+        <EmergencyMap 
+          center={mapCenter} 
+          directions={directions} 
+          routeInfo={routeInfo}
+          onMapClick={(coords) => {
+            if (!activeEmergency) {
+              setManualLocation(coords.lat, coords.lng);
+              toast.success('Location updated manually');
+            }
+          }}
+        >
           {/* Citizen's position */}
           {latitude && longitude && (
             <ServiceMarker

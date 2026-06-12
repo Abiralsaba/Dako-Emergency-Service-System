@@ -5,7 +5,7 @@ const LIBRARIES = ['places', 'geometry'];
 
 const containerStyle = { width: '100%', height: '100%' };
 
-export default function EmergencyMap({ center, children, directions = null, zoom = 14, routeInfo, onMapLoad }) {
+export default function EmergencyMap({ center, children, directions = null, zoom = 14, routeInfo, onMapLoad, onMapClick }) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries: LIBRARIES,
@@ -45,6 +45,9 @@ export default function EmergencyMap({ center, children, directions = null, zoom
         center={defaultCenter}
         zoom={zoom}
         onLoad={onLoad}
+        onClick={(e) => {
+          if (onMapClick) onMapClick({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+        }}
         options={{
           disableDefaultUI: true,
           zoomControl: true,

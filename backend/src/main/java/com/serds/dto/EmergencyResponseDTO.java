@@ -29,6 +29,11 @@ public class EmergencyResponseDTO {
     // Timestamps
     private LocalDateTime createdAt;
     private LocalDateTime dispatchedAt;
+    private LocalDateTime cancelledAt;
+    private Double baseFare;
+    private Double perKmFare;
+    private Double totalDistanceKm;
+    private Double totalFare;
     private LocalDateTime acceptedAt;
     private LocalDateTime arrivedAt;
     private LocalDateTime resolvedAt;
@@ -78,10 +83,25 @@ public class EmergencyResponseDTO {
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getDispatchedAt() { return dispatchedAt; }
     public void setDispatchedAt(LocalDateTime dispatchedAt) { this.dispatchedAt = dispatchedAt; }
+    public LocalDateTime getCancelledAt() { return cancelledAt; }
+    public void setCancelledAt(LocalDateTime cancelledAt) { this.cancelledAt = cancelledAt; }
+    public Double getBaseFare() { return baseFare; }
+    public void setBaseFare(Double baseFare) { this.baseFare = baseFare; }
+    public Double getPerKmFare() { return perKmFare; }
+    public void setPerKmFare(Double perKmFare) { this.perKmFare = perKmFare; }
+    public Double getTotalDistanceKm() { return totalDistanceKm; }
+    public void setTotalDistanceKm(Double totalDistanceKm) { this.totalDistanceKm = totalDistanceKm; }
+    public Double getTotalFare() { return totalFare; }
+    public void setTotalFare(Double totalFare) { this.totalFare = totalFare; }
     public LocalDateTime getAcceptedAt() { return acceptedAt; }
     public void setAcceptedAt(LocalDateTime acceptedAt) { this.acceptedAt = acceptedAt; }
     public LocalDateTime getArrivedAt() { return arrivedAt; }
     public void setArrivedAt(LocalDateTime arrivedAt) { this.arrivedAt = arrivedAt; }
     public LocalDateTime getResolvedAt() { return resolvedAt; }
     public void setResolvedAt(LocalDateTime resolvedAt) { this.resolvedAt = resolvedAt; }
+
+    // Fire detection photo URL
+    private String imageUrl;
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

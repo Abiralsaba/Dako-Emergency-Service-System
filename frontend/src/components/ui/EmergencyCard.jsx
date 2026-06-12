@@ -56,6 +56,22 @@ export default function EmergencyCard({ emergency, onClick, showDetails }) {
         </div>
       </div>
 
+      {/* Completed Fare Receipt */}
+      {emergency.status === 'COMPLETED' && emergency.totalFare != null && (
+        <div style={{
+          marginTop: '12px', padding: '10px 12px', borderRadius: '8px',
+          background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+        }}>
+          <div style={{ fontSize: '12px', color: '#10B981', fontWeight: 600 }}>
+            Total Trip Distance: {emergency.totalDistanceKm} km
+          </div>
+          <div style={{ fontSize: '14px', color: '#10B981', fontWeight: 700 }}>
+            Fare: {emergency.totalFare === 0 ? 'FREE' : `${emergency.totalFare} ৳`}
+          </div>
+        </div>
+      )}
+
       {/* Extended details for admin */}
       {showDetails && (
         <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>

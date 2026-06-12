@@ -14,7 +14,7 @@ import toast from 'react-hot-toast';
 
 export default function ResponderDashboard() {
   const { user } = useAuth();
-  const { latitude, longitude } = useGeolocation();
+  const { latitude, longitude, setManualLocation } = useGeolocation();
   const { subscribe } = useWebSocket();
 
   const [activeJob, setActiveJob] = useState(null);
@@ -312,6 +312,16 @@ export default function ResponderDashboard() {
                 </div>
               </div>
 
+              {pendingOffer.imageUrl && (
+                <div style={{ marginBottom: '16px' }}>
+                  <img 
+                    src={pendingOffer.imageUrl} 
+                    alt="Emergency" 
+                    style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(0, 106, 78, 0.3)' }}
+                  />
+                </div>
+              )}
+
               <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', fontSize: '13px' }}>
                 <div style={{ color: '#64748b' }}>
                   <User size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
@@ -372,6 +382,15 @@ export default function ResponderDashboard() {
               <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>
                 {activeJob.description || 'No description provided'}
               </p>
+              {activeJob.imageUrl && (
+                <div style={{ marginTop: '12px' }}>
+                  <img 
+                    src={activeJob.imageUrl} 
+                    alt="Emergency context" 
+                    style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(0, 106, 78, 0.2)' }}
+                  />
+                </div>
+              )}
             </motion.div>
 
             <StatusStepper currentStatus={activeJob.status} />
@@ -444,7 +463,26 @@ export default function ResponderDashboard() {
 
       {/* Right — Map */}
       <div className="dashboard-map">
-        <EmergencyMap center={myPos || citizenPos} directions={directions} routeInfo={routeInfo}>
+        {/* Hint overlay for users */}
+        <div style={{
+          position: 'absolute', top: '20px', left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(10, 15, 30, 0.8)', backdropFilter: 'blur(10px)',
+          padding: '8px 16px', borderRadius: '20px', zIndex: 10,
+          border: '1px solid rgba(0, 106, 78, 0.3)', color: '#00C896',
+          fontSize: '11px', fontWeight: 700, fontFamily: "'Poppins', sans-serif",
+          boxShadow: '0 4px 15px rgba(0,0,0,0.3)', pointerEvents: 'none'
+        }}>
+          🎯 Tap anywhere on the map to set your exact location
+        </div>
+        <EmergencyMap 
+          center={myPos || citizenPos} 
+          directions={directions} 
+          routeInfo={routeInfo}
+          onMapClick={(coords) => {
+            setManualLocation(coords.lat, coords.lng);
+            toast.success('Location updated manually');
+          }}
+        >
           {myPos && (
             <ServiceMarker position={myPos} type="DEFAULT" label="Your Position" details="You are here" />
           )}

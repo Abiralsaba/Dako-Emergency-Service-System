@@ -82,9 +82,9 @@ export default function HeroSection({ scrollYProgress }) {
           y: titleY,
           opacity: titleOpacity,
           pointerEvents: 'auto',
-          background: 'radial-gradient(ellipse at center, rgba(12,18,25,0.6) 0%, transparent 70%)',
-          padding: '40px 60px',
-          borderRadius: '24px',
+          background: 'radial-gradient(ellipse at center, rgba(12,18,25,0.7) 0%, rgba(12,18,25,0.2) 60%, transparent 80%)',
+          padding: '60px 80px',
+          borderRadius: '32px',
         }}
       >
         {/* Accent line — green to gold */}
@@ -107,9 +107,9 @@ export default function HeroSection({ scrollYProgress }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
           style={{
-            fontFamily: "'Poppins', sans-serif",
-            fontSize: '14px',
-            letterSpacing: '5px',
+            fontFamily: "'Noto Sans Bengali', 'Poppins', sans-serif",
+            fontSize: '18px',
+            letterSpacing: '3px',
             color: '#D4A853',
             textTransform: 'uppercase',
             marginBottom: '16px',
@@ -126,14 +126,15 @@ export default function HeroSection({ scrollYProgress }) {
           transition={{ duration: 1, delay: 0.2 }}
           style={{
             fontFamily: "'Poppins', sans-serif",
-            fontSize: 'clamp(64px, 12vw, 140px)',
+            fontSize: 'clamp(64px, 12vw, 150px)',
             fontWeight: 900,
-            color: '#ffffff',
+            color: '#FFFFFF',
             lineHeight: 1,
-            letterSpacing: '12px',
+            letterSpacing: '20px',
+            textTransform: 'uppercase',
             textShadow:
-              '0 0 60px rgba(0,106,78,0.5), 0 0 120px rgba(0,106,78,0.2), 0 4px 20px rgba(0,0,0,0.9)',
-            margin: 0,
+              '0 0 60px rgba(0,106,78,0.7), 0 0 120px rgba(0,106,78,0.3), 0 10px 30px rgba(0,0,0,0.9)',
+            margin: '10px 0',
           }}
         >
           DAKO
@@ -164,7 +165,8 @@ export default function HeroSection({ scrollYProgress }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.9 }}
           style={{
-            fontSize: '17px',
+            fontFamily: "'Noto Sans Bengali', 'Inter', sans-serif",
+            fontSize: '18px',
             color: '#C8D4E0',
             marginTop: '16px',
             fontWeight: 400,

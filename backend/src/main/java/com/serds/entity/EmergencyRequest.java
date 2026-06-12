@@ -2,6 +2,7 @@ package com.serds.entity;
 
 import com.serds.enums.EmergencyStatus;
 import com.serds.enums.EmergencyType;
+import com.serds.enums.Severity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -32,6 +33,11 @@ public class EmergencyRequest {
     @Column(nullable = false)
     private EmergencyStatus status = EmergencyStatus.SEARCHING;
 
+    // How urgent — affects dispatch priority order
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Severity severity = Severity.MEDIUM;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -46,6 +52,19 @@ public class EmergencyRequest {
 
     // Dispatch configuration
     private Double searchRadiusKm;
+
+    // Pricing & Fare Calculation
+    @Column(name = "base_fare")
+    private Double baseFare;
+
+    @Column(name = "per_km_fare")
+    private Double perKmFare;
+
+    @Column(name = "total_distance_km")
+    private Double totalDistanceKm;
+
+    @Column(name = "total_fare")
+    private Double totalFare;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -67,6 +86,10 @@ public class EmergencyRequest {
 
     @Column(columnDefinition = "TEXT")
     private String cancelReason;
+
+    // URL of uploaded photo (e.g., fire detection photo)
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
 
     public EmergencyRequest() {}
 
@@ -102,6 +125,18 @@ public class EmergencyRequest {
     public Double getSearchRadiusKm() { return searchRadiusKm; }
     public void setSearchRadiusKm(Double searchRadiusKm) { this.searchRadiusKm = searchRadiusKm; }
 
+    public Double getBaseFare() { return baseFare; }
+    public void setBaseFare(Double baseFare) { this.baseFare = baseFare; }
+
+    public Double getPerKmFare() { return perKmFare; }
+    public void setPerKmFare(Double perKmFare) { this.perKmFare = perKmFare; }
+
+    public Double getTotalDistanceKm() { return totalDistanceKm; }
+    public void setTotalDistanceKm(Double totalDistanceKm) { this.totalDistanceKm = totalDistanceKm; }
+
+    public Double getTotalFare() { return totalFare; }
+    public void setTotalFare(Double totalFare) { this.totalFare = totalFare; }
+
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
@@ -122,4 +157,10 @@ public class EmergencyRequest {
 
     public String getCancelReason() { return cancelReason; }
     public void setCancelReason(String cancelReason) { this.cancelReason = cancelReason; }
+
+    public Severity getSeverity() { return severity; }
+    public void setSeverity(Severity severity) { this.severity = severity; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

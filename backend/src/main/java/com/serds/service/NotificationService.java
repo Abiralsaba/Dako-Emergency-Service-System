@@ -35,20 +35,20 @@ public class NotificationService {
         );
     }
 
-    // Send an offer to a responder with emergency details and countdown
     public void notifyResponderOffer(Long responderId, EmergencyRequest emergency, EmergencyOffer offer) {
-        Map<String, Object> offerData = Map.of(
-            "type", "OFFER",
-            "emergencyId", emergency.getId(),
-            "offerId", offer.getId(),
-            "emergencyType", emergency.getEmergencyType().name(),
-            "description", emergency.getDescription() != null ? emergency.getDescription() : "",
-            "citizenName", emergency.getCitizen().getFullName(),
-            "latitude", emergency.getLatitude(),
-            "longitude", emergency.getLongitude(),
-            "distanceKm", offer.getDistanceKm() != null ? offer.getDistanceKm() : 0,
-            "expiresAt", offer.getExpiresAt().toString()
-        );
+        Map<String, Object> offerData = new java.util.HashMap<>();
+        offerData.put("type", "OFFER");
+        offerData.put("emergencyId", emergency.getId());
+        offerData.put("offerId", offer.getId());
+        offerData.put("emergencyType", emergency.getEmergencyType().name());
+        offerData.put("description", emergency.getDescription() != null ? emergency.getDescription() : "");
+        offerData.put("citizenName", emergency.getCitizen().getFullName());
+        offerData.put("latitude", emergency.getLatitude());
+        offerData.put("longitude", emergency.getLongitude());
+        offerData.put("distanceKm", offer.getDistanceKm() != null ? offer.getDistanceKm() : 0);
+        offerData.put("expiresAt", offer.getExpiresAt().toString());
+        offerData.put("imageUrl", emergency.getImageUrl());
+        
         messagingTemplate.convertAndSend(
             "/topic/responder/" + responderId, (Object) offerData
         );

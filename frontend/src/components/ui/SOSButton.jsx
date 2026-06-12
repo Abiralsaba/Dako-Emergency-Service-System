@@ -1,31 +1,31 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export default function SOSButton({ onClick, disabled }) {
+export default function SOSButton({ onClick, disabled, typeLabel }) {
+  const buttonText = typeLabel ? `Choose ${typeLabel}` : 'Choose Service';
+  
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
       <motion.button
         onClick={onClick}
         disabled={disabled}
-        whileHover={{ scale: disabled ? 1 : 1.05 }}
-        whileTap={{ scale: disabled ? 1 : 0.95 }}
+        whileHover={{ scale: disabled ? 1 : 1.02 }}
+        whileTap={{ scale: disabled ? 1 : 0.98 }}
         style={{
-          width: '140px', height: '140px', borderRadius: '50%',
-          background: disabled
-            ? 'linear-gradient(135deg, #374151, #1f2937)'
-            : 'linear-gradient(135deg, #F42A41, #c81e32)',
-          border: 'none', cursor: disabled ? 'not-allowed' : 'pointer',
-          color: '#fff', fontSize: '28px', fontWeight: 900, letterSpacing: '2px',
-          boxShadow: disabled
-            ? 'none'
-            : '0 0 40px rgba(244, 42, 65, 0.4), 0 0 80px rgba(244, 42, 65, 0.2)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          animation: disabled ? 'none' : 'sosPulse 2s infinite',
-          transition: 'all 0.3s ease',
-          position: 'relative',
+          width: '100%', 
+          padding: '16px',
+          borderRadius: '12px',
+          background: disabled ? '#374151' : '#F1F5F9', // Uber's light grey/white button
+          border: 'none', 
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          color: disabled ? '#9CA3AF' : '#121212', // Black text for contrast
+          fontSize: '18px', 
+          fontWeight: 600, 
+          fontFamily: "'Inter', sans-serif",
+          transition: 'all 0.2s ease',
         }}
       >
-        SOS
+        {buttonText}
       </motion.button>
     </div>
   );

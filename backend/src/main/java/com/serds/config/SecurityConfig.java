@@ -38,11 +38,21 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/ws/**").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
                 // Admin-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/analytics/**").hasRole("ADMIN")
                 // Responder endpoints
                 .requestMatchers("/api/responder/**").hasAnyRole("RESPONDER", "ADMIN")
-                // Authenticated endpoints
+                .requestMatchers("/api/reports/**").hasAnyRole("RESPONDER", "ADMIN")
+                .requestMatchers("/api/shifts/**").hasAnyRole("RESPONDER", "ADMIN")
+                // Station and vehicle management — admin only
+                .requestMatchers("/api/stations/**").hasRole("ADMIN")
+                .requestMatchers("/api/vehicles/**").hasRole("ADMIN")
+                // Chat, ratings — any authenticated user
+                .requestMatchers("/api/chat/**").authenticated()
+                .requestMatchers("/api/ratings/**").authenticated()
+                // Everything else needs auth
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()
             )

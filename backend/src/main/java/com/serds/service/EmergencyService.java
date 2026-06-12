@@ -7,6 +7,7 @@ import com.serds.enums.EmergencyStatus;
 import com.serds.enums.EmergencyType;
 import com.serds.enums.OfferStatus;
 import com.serds.enums.ResponderStatus;
+import com.serds.enums.Severity;
 import com.serds.exception.InvalidOperationException;
 import com.serds.exception.ResourceNotFoundException;
 import com.serds.repository.EmergencyOfferRepository;
@@ -69,7 +70,53 @@ public class EmergencyService {
         emergency.setDescription(dto.getDescription());
         emergency.setLatitude(dto.getLatitude());
         emergency.setLongitude(dto.getLongitude());
+        emergency.setBaseFare(dto.getBaseFare());
+        emergency.setPerKmFare(dto.getPerKmFare());
         emergency.setStatus(EmergencyStatus.SEARCHING);
+        emergencyRepo.save(emergency);
+
+        // Auto-dispatch via engine
+        dispatchEngine.dispatch(emergency);
+
+        EmergencyResponseDTO response = toResponseDTO(emergency);
+        notificationService.notifyEmergencyUpdate(response);
+        notificationService.notifyAdmin(response);
+        return response;
+    }
+
+    // Fire detection flow — creates emergency with specified severity (e.g. CRITICAL for confirmed fire)
+    public EmergencyResponseDTO createEmergencyWithSeverity(Long citizenId, EmergencyRequestDTO dto, String severityStr) {
+        return createEmergencyWithSeverity(citizenId, dto, severityStr, null);
+    }
+
+    public EmergencyResponseDTO createEmergencyWithSeverity(Long citizenId, EmergencyRequestDTO dto, String severityStr, String imageUrl) {
+        BaseUser citizen = userRepo.findById(citizenId)
+            .orElseThrow(() -> new ResourceNotFoundException("Citizen not found"));
+
+        // Prevent duplicate active emergencies
+        List<EmergencyStatus> activeStatuses = List.of(
+            EmergencyStatus.SEARCHING, EmergencyStatus.OFFER_SENT,
+            EmergencyStatus.ACCEPTED, EmergencyStatus.RESPONDER_EN_ROUTE,
+            EmergencyStatus.RESPONDER_ARRIVED, EmergencyStatus.IN_PROGRESS
+        );
+        long activeCount = emergencyRepo.countByCitizenIdAndStatusIn(citizenId, activeStatuses);
+        if (activeCount > 0) {
+            throw new InvalidOperationException("You already have an active emergency request");
+        }
+
+        EmergencyRequest emergency = new EmergencyRequest();
+        emergency.setCitizen(citizen);
+        emergency.setEmergencyType(EmergencyType.valueOf(dto.getEmergencyType()));
+        emergency.setDescription(dto.getDescription());
+        emergency.setLatitude(dto.getLatitude());
+        emergency.setLongitude(dto.getLongitude());
+        emergency.setBaseFare(dto.getBaseFare());
+        emergency.setPerKmFare(dto.getPerKmFare());
+        emergency.setStatus(EmergencyStatus.SEARCHING);
+        emergency.setSeverity(Severity.valueOf(severityStr));
+        if (imageUrl != null) {
+            emergency.setImageUrl(imageUrl);
+        }
         emergencyRepo.save(emergency);
 
         // Auto-dispatch via engine
@@ -203,6 +250,26 @@ public class EmergencyService {
             }
             case COMPLETED -> {
                 emergency.setResolvedAt(LocalDateTime.now());
+                
+                // Calculate Fare if base/per_km rates exist
+                if (emergency.getBaseFare() != null && emergency.getPerKmFare() != null) {
+                    if (emergency.getLatitude() != null && emergency.getLongitude() != null &&
+                        emergency.getResponder() != null && emergency.getResponder().getLatitude() != null && emergency.getResponder().getLongitude() != null) {
+                        
+                        double distance = calculateHaversineDistance(
+                            emergency.getLatitude(), emergency.getLongitude(),
+                            emergency.getResponder().getLatitude(), emergency.getResponder().getLongitude()
+                        );
+                        // Round to 1 decimal place
+                        distance = Math.round(distance * 10.0) / 10.0;
+                        emergency.setTotalDistanceKm(distance);
+                        
+                        double total = emergency.getBaseFare() + (distance * emergency.getPerKmFare());
+                        // Round to 2 decimal places
+                        emergency.setTotalFare(Math.round(total * 100.0) / 100.0);
+                    }
+                }
+                
                 freeResponder(emergency);
             }
             case CANCELLED -> {
@@ -262,14 +329,25 @@ public class EmergencyService {
     // Free up the assigned responder
     private void freeResponder(EmergencyRequest emergency) {
         if (emergency.getResponder() != null) {
-            Responder responder = responderRepo.findById(emergency.getResponder().getId()).orElse(null);
-            if (responder != null) {
-                responder.setIsAvailable(true);
-                responder.setCurrentStatus(ResponderStatus.ONLINE);
-                responder.setTotalResponseCount(responder.getTotalResponseCount() + 1);
-                responderRepo.save(responder);
+            Responder r = responderRepo.findById(emergency.getResponder().getId()).orElse(null);
+            if (r != null) {
+                r.setIsAvailable(true);
+                r.setCurrentStatus(ResponderStatus.ONLINE);
+                r.setTotalResponseCount(r.getTotalResponseCount() + 1);
+                responderRepo.save(r);
             }
         }
+    }
+
+    private double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Earth radius in km
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
     }
 
     // State machine — only allows valid status transitions
@@ -360,9 +438,15 @@ public class EmergencyService {
         dto.setSearchRadiusKm(e.getSearchRadiusKm());
         dto.setCreatedAt(e.getCreatedAt());
         dto.setDispatchedAt(e.getDispatchedAt());
+        dto.setCancelledAt(e.getCancelledAt());
+        dto.setBaseFare(e.getBaseFare());
+        dto.setPerKmFare(e.getPerKmFare());
+        dto.setTotalDistanceKm(e.getTotalDistanceKm());
+        dto.setTotalFare(e.getTotalFare());
         dto.setAcceptedAt(e.getAcceptedAt());
         dto.setArrivedAt(e.getArrivedAt());
         dto.setResolvedAt(e.getResolvedAt());
+        dto.setImageUrl(e.getImageUrl());
 
         // Citizen info
         dto.setCitizenId(e.getCitizen().getId());

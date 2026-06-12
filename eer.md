@@ -97,6 +97,11 @@
 | latitude      | Double           | NOT NULL — citizen's SOS location at trigger time                  |     |
 | longitude     | Double           | NOT NULL — citizen's SOS location at trigger time                  |     |
 | address       | String (TEXT)    | Nullable — reverse-geocoded human-readable address                 |     |
+| imageUrl      | String (VARCHAR) | Nullable — Image URL sent for AI analysis                          |     |
+| baseFare      | Double           | Nullable — Base rate for the selected service                      |     |
+| perKmFare     | Double           | Nullable — Dynamic per kilometer fare                              |     |
+| totalDistanceKm | Double         | Nullable — Computed Haversine trip distance                        |     |
+| totalFare     | Double           | Nullable — Final dynamically computed trip fare                    |     |
 | createdAt     | LocalDateTime    | Auto-set on creation, non-updatable                                |     |
 | dispatchedAt  | LocalDateTime    | Nullable — timestamp when a responder was assigned                 |     |
 | arrivedAt     | LocalDateTime    | Nullable — timestamp when responder reached scene                  |     |
@@ -321,6 +326,25 @@
 | uploadedAt    | LocalDateTime    | Auto-set                             |     |
 
 - **Table Name:** `sos_media`
+
+---
+
+### 1.17 AIAnalysisResult (New Entity) — [NEW]
+
+> Stores the deep learning model's computer vision output when it processes citizen uploads (e.g., verifying a Fire emergency).
+
+| Attribute     | Data Type        | Constraint                                     | Key |
+|---------------|------------------|------------------------------------------------|-----|
+| id            | Long (BIGINT)    | AUTO_INCREMENT, NOT NULL                       | PK  |
+| request_id    | Long (BIGINT)    | FK → emergency_requests.id, UNIQUE, NOT NULL   | FK  |
+| isDetected    | Boolean          | NOT NULL — True if the AI confirmed the threat |     |
+| confidence    | Double           | NOT NULL — AI confidence score (0.0 to 1.0)    |     |
+| modelVersion  | String (VARCHAR) | Nullable — Version of the AI model used        |     |
+| boundingBoxes | String (TEXT)    | Nullable — JSON array of detection coordinates |     |
+| analyzedAt    | LocalDateTime    | Auto-set upon analysis completion              |     |
+
+- **Table Name:** `ai_analysis_results`
+- **Note:** This is a **weak entity** identifying the AI's conclusion for a specific EmergencyRequest.
 
 ---
 
@@ -811,6 +835,25 @@ Used by: `Shift.status`
 
 ---
 
+### 3.22 EmergencyRequest — *verified by* → AIAnalysisResult — [NEW]
+
+```
+┌───────────────────┐              ┌──────────────────┐
+│ EmergencyRequest  │ 1 ═══════ 1 │ AIAnalysisResult │
+└───────────────────┘ verified_by  └──────────────────┘
+```
+
+| Property             | Value                              |
+|----------------------|------------------------------------|
+| Relationship Name    | **verified_by**                    |
+| EmergencyRequest participation | **Partial** — not all requests require AI computer vision |
+| AIAnalysisResult participation | **Total** — every AI result MUST belong to an emergency request |
+| Cardinality          | **1:1** — one request → at most one AI analysis |
+| FK                   | `ai_analysis_results.request_id` → `emergency_requests.id` |
+| **Weak Entity**      | AIAnalysisResult is a weak entity of EmergencyRequest |
+
+---
+
 ### 3.22 Responder — *files* → IncidentReport — [NEW]
 
 ```
@@ -856,7 +899,8 @@ Used by: `Shift.status`
 | 21| works                  | Responder             | 1:N    | Shift              | Total           | Total           |
 | 22| schedules              | Station               | 1:N    | Shift              | Partial         | Total           |
 | 23| has (media)            | EmergencyRequest      | 1:N    | SOSMedia           | Partial         | Total           |
-| 24| files                  | Responder             | 1:N    | IncidentReport     | Partial         | Total           |
+| 24| verified_by            | EmergencyRequest      | 1:1    | AIAnalysisResult   | Partial         | Total           |
+| 25| files                  | Responder             | 1:N    | IncidentReport     | Partial         | Total           |
 
 ---
 
@@ -960,12 +1004,29 @@ Used by: `Shift.status`
 │     latitude        DOUBLE NOT NULL                              │
 │     longitude       DOUBLE NOT NULL                              │
 │     address         TEXT                                         │
+│     imageUrl        VARCHAR                                      │
+│     baseFare        DOUBLE                                       │
+│     perKmFare       DOUBLE                                       │
+│     totalDistanceKm DOUBLE                                       │
+│     totalFare       DOUBLE                                       │
 │     created_at      DATETIME                                     │
 │     dispatched_at   DATETIME                                     │
 │     arrived_at      DATETIME                                     │
 │     resolved_at     DATETIME                                     │
 │     cancelled_at    DATETIME                                     │
 │     cancelReason    TEXT                                          │
+└──────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────┐
+│                 ai_analysis_results                              │
+│──────────────────────────────────────────────────────────────────│
+│ PK  id              BIGINT AUTO_INCREMENT                        │
+│ FK  request_id      BIGINT UNIQUE NOT NULL → emergency_requests  │
+│     isDetected      BOOLEAN NOT NULL                             │
+│     confidence      DOUBLE NOT NULL                              │
+│     modelVersion    VARCHAR                                      │
+│     boundingBoxes   TEXT                                         │
+│     analyzed_at     DATETIME                                     │
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
@@ -1165,8 +1226,8 @@ Used by: `Shift.status`
 | Category         | Entities                                                        | Count |
 |------------------|-----------------------------------------------------------------|:-----:|
 | **Existing**     | BaseUser, Citizen, Responder, Admin, EmergencyRequest           | 5     |
-| **New (proposed)** | Station, Zone, Vehicle, IncidentReport, Rating, Notification, DispatchLog, ChatMessage, EmergencyContact, Shift, SOSMedia | 11  |
-| **Total**        |                                                                 | **16** |
+| **New (proposed)** | Station, Zone, Vehicle, IncidentReport, Rating, Notification, DispatchLog, ChatMessage, EmergencyContact, Shift, SOSMedia, AIAnalysisResult | 12  |
+| **Total**        |                                                                 | **17** |
 | **Enumerations** | Role, ServiceType, EmergencyType, EmergencyStatus, Severity, StationType, VehicleType, VehicleStatus, AccessLevel, NotificationType, DispatchAction, MessageType, MediaType, ShiftType, ShiftStatus | **15** |
-| **Relationships** |                                                                | **24** |
+| **Relationships** |                                                                | **25** |
 <!-- Emergency dispatch database reference. -->

@@ -60,6 +60,13 @@ const emergencyService = {
 
   getMetrics: () =>
     api.get('/admin/metrics'),
+
+  // 🔥 Fire detection — sends image to AI service via backend
+  detectFire: (formData) =>
+    api.post('/emergency/fire-detect', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 30000, // 30s timeout for AI processing
+    }),
 };
 
 export default emergencyService;

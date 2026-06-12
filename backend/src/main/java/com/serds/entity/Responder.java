@@ -15,6 +15,11 @@ public class Responder extends BaseUser {
     private String vehicleRegistrationNumber;
     private String badgeNumber;
 
+    // Which station this responder is based at
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "station_id")
+    private Station station;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ResponderStatus currentStatus = ResponderStatus.OFFLINE;
@@ -64,4 +69,6 @@ public class Responder extends BaseUser {
     public void setTotalResponseCount(Integer totalResponseCount) { this.totalResponseCount = totalResponseCount; }
     public Double getRating() { return rating; }
     public void setRating(Double rating) { this.rating = rating; }
+    public Station getStation() { return station; }
+    public void setStation(Station station) { this.station = station; }
 }

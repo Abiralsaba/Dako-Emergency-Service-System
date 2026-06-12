@@ -1,0 +1,104 @@
+/* =============================================
+   স্বাস্থ্য মন্ত্রণালয় — Health Module Styles
+   Red & White Theme — Bangladesh Health Ministry
+============================================= */
+
+:root {
+    --health-red: #dc2626;
+    --health-red-light: #ef4444;
+    --health-red-dark: #b91c1c;
+    --health-red-glow: rgba(239, 68, 68, 0.3);
+    --health-blue: #3b82f6;
+    --health-blue-light: #60a5fa;
+    --health-blue-dark: #2563eb;
+    --health-white: #ffffff;
+    --health-bg: #f8fafc;
+    --health-card-bg: #ffffff;
+    --health-text: #1e293b;
+    --health-text-light: #64748b;
+    --health-border: #e2e8f0;
+    --health-success: #10b981;
+    --health-warning: #f59e0b;
+}
+
+.health-portal {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--health-bg);
+    color: var(--health-text);
+    min-height: 100vh;
+}
+
+/* Sidebar styling for health portal */
+.health-sidebar {
+    background-color: var(--health-red-dark);
+    color: white;
+}
+
+.health-sidebar .nav-item {
+    color: #fca5a5;
+    transition: all 0.3s ease;
+}
+
+.health-sidebar .nav-item:hover,
+.health-sidebar .nav-item.active {
+    background-color: var(--health-red);
+    color: white;
+    border-left: 4px solid white;
+}
+
+.health-btn-primary {
+    background: linear-gradient(135deg, var(--health-red), var(--health-red-dark));
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.health-btn-primary:hover {
+    background: linear-gradient(135deg, var(--health-red-dark), #991b1b);
+    box-shadow: 0 4px 15px var(--health-red-glow);
+    transform: translateY(-2px);
+}
+
+.health-card {
+    background: var(--health-card-bg);
+    border: 1px solid var(--health-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.health-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.health-input {
+    border: 1px solid var(--health-border);
+    border-radius: 8px;
+    padding: 10px 15px;
+    width: 100%;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.health-input:focus {
+    outline: none;
+    border-color: var(--health-red);
+    box-shadow: 0 0 0 3px var(--health-red-glow);
+}
+
+.health-header {
+    background: white;
+    border-bottom: 1px solid var(--health-border);
+}
+
+.health-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--health-red);
+}
+
+.health-stat-label {
+    color: var(--health-text-light);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
